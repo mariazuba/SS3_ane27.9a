@@ -1,0 +1,232 @@
+---
+title: "Formato  Archivo  Data.ss"
+author: " "
+date: '`r format(Sys.Date(),"%B, %d, %Y")`'
+output: 
+  pdf_document:
+   toc: TRUE
+   number_sections: yes
+urlcolor: blue   
+---
+
+
+```{r global-options, include=FALSE}
+knitr::opts_chunk$set(echo=T, warning=FALSE, message=FALSE,collapse=TRUE,fig.align="center",fig.pos="h!")
+```
+
+
+
+```{r results='hide',include=FALSE}
+## Librerías requeridas
+ paquetes <- c("stringr", "tidyverse", "kableExtra","ggplot2","ggthemes",
+               "patchwork","dplyr","reshape","here","r4ss")
+ lapply(paquetes, require, character.only = TRUE)
+```
+
+### Identificar formato de entrada de datos SS3
+
+1. Identificamos el directorio donde se encuentra el modelo base simple
+```{r}
+dirname.base <- here("10a_anchcadiz")
+```
+
+
+5. Leer los archivos de Stock Synthesis  con la función `SS_read()`
+
+```{r}
+inputs <- r4ss::SS_read(dir = dirname.base)
+```
+6. Investigar el modelo 
+
+ Cada uno de los archivos de entrada se lee en R como una lista. 
+ 
+ Use `names()` para ver todos los componentes de la lista
+
+
+Revisamos los elementos de la lista
+```{r}
+names(inputs) 
+```
+
+Revisamos los nombres de los componentes de la lista del archivo .dat
+```{r}
+names(inputs$dat) 
+```
+
+```{r}
+inputs$dat[1]
+inputs$dat[2]
+inputs$dat[3]
+inputs$dat[4]
+inputs$dat[5]
+inputs$dat[6]
+inputs$dat[7]
+inputs$dat[8]
+inputs$dat[9]
+inputs$dat[10]
+
+inputs$dat[11]
+inputs$dat[12]
+inputs$dat[13]
+inputs$dat[14]
+inputs$dat[15]
+inputs$dat[16]
+inputs$dat[17]
+inputs$dat[18]
+inputs$dat[19]
+inputs$dat[20]
+
+inputs$dat[21]
+inputs$dat[22]
+inputs$dat[23]
+inputs$dat[24]
+inputs$dat[25]
+inputs$dat[26]
+inputs$dat[27]
+inputs$dat[28]
+inputs$dat[29]
+inputs$dat[30]
+
+inputs$dat[31]
+inputs$dat[32]
+inputs$dat[33]
+inputs$dat[34]
+inputs$dat[35]
+inputs$dat[36]
+inputs$dat[37]
+inputs$dat[38]
+inputs$dat[39]
+inputs$dat[40]
+
+inputs$dat[41]
+inputs$dat[42]
+inputs$dat[43]
+inputs$dat[44]
+inputs$dat[45]
+inputs$dat[46]
+inputs$dat[47]
+inputs$dat[48]
+inputs$dat[49]
+inputs$dat[50]
+
+inputs$dat[51]
+inputs$dat[52]
+inputs$dat[53]
+inputs$dat[54]
+inputs$dat[55]
+
+```
+
+
+\newpage
+
+0. Especificaciones iniciales
+```{r}
+inputs$dat$styr
+inputs$dat$endyr
+inputs$dat$nseas
+inputs$dat$months_per_seas
+inputs$dat$Nsubseasons
+inputs$dat$spawn_month
+inputs$dat$Ngenders
+inputs$dat$Nsexes
+inputs$dat$Nages
+inputs$dat$N_areas
+inputs$dat$Nfleets
+```
+
+
+1. Sobre los datos de captura
+
+Primero ingresamos las especificaciones de los Datos de captura de la flota
+```{r}
+inputs$dat$fleetinfo
+# fleetinfo desglosado
+inputs$dat$fleetnames
+inputs$dat$surveytiming
+inputs$dat$units_of_catch
+inputs$dat$areas
+```
+Luego ingresamos los datos de captura de la flota
+```{r}
+inputs$dat$catch
+```
+
+
+
+2. Sobre los Datos de índices de abundancia
+
+
+Primero ingresamos las especificaciones de los datos de los índices de abundancia
+```{r}
+inputs$dat$CPUEinfo
+```
+
+Luego ingresamos los datos de los índices de abundancia
+```{r}
+inputs$dat$CPUE
+```
+
+
+
+Datos de descarte y tallas medias
+```{r}
+inputs$dat$N_discard_fleets
+inputs$dat$use_meanbodywt
+```
+Especificación de los Datos composición de tallas
+```{r}
+inputs$dat$lbin_method
+inputs$dat$binwidth
+inputs$dat$minimum_size
+inputs$dat$maximum_size
+inputs$dat$use_lencomp
+```
+
+Datos de composición de tallas
+```{r}
+inputs$dat$len_info
+```
+
+
+Especificación del vector de tallas
+```{r}
+inputs$dat$N_lbins
+inputs$dat$lbin_vector
+```
+
+
+Datos de composición de tallas
+```{r}
+inputs$dat$lencomp
+```
+
+
+Luego ingresamos los datos de edad
+```{r}
+inputs$dat$N_agebins
+inputs$dat$agebin_vector
+inputs$dat$N_ageerror_definitions
+inputs$dat$ageerror
+inputs$dat$age_info
+inputs$dat$agecomp
+```
+
+
+Otros datos
+```{r}
+inputs$dat$use_MeanSize_at_Age_obs
+inputs$dat$MeanSize_at_Age_obs
+
+```
+
+```{r}
+inputs$dat$N_environ_variables
+inputs$dat$N_sizefreq_methods
+inputs$dat$do_tags
+inputs$dat$morphcomp_data
+inputs$dat$use_selectivity_priors
+inputs$dat$eof
+```
+
+\newpage
