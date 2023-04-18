@@ -53,6 +53,281 @@ copy_SS_inputs(dir.old = dirname.base,
 
 Buscar esta información en archivos entregados!!!
 
+### Capturas en formato `Gadget`
+
+Capturas anuales del stock (toneladas)
+
+```{r}
+
+# Se lee archivo de entrada Gadget
+capturas<-read.table(file=here('Data_Gadget',"fleet.seine.data"),
+                         header=F,sep="",na='NA',fill=T,skip = 3) %>% 
+             magrittr::set_colnames(c('year','step','area','vessel','number'))
+#capturas
+```
+
+```{r fig.height=5,fig.width=8,echo=F}
+
+capturaplot<-capturas %>% mutate(ytr=as.yearqtr(year + step/4))
+
+ggplot(capturaplot,aes(x=ytr,y=number/1000000))+
+  geom_line()+
+  geom_point()+
+   labs(x="Años/Trimestres", y="Capturas en número (millones)") +  
+   theme_bw() + 
+scale_x_yearqtr(format = "%Y-T%q")
+
+```
+
+### Indices de abundancia formato `Gadget`
+
+
+```{r}
+#----------------------------------------------------------------------------------------
+pelago<-read.table(file=here('Data_Gadget',"surveyindices.pelagonumber.survey.lengths"),
+                         header=F,sep="",na='NA',fill=T,skip = 3) %>% 
+                     magrittr::set_colnames(c('year','step','area','length','number'))
+#pelago
+#----------------------------------------------------------------------------------------
+ecocadiz<-read.table(file=here('Data_Gadget',"surveyindices.ecocadiz.survey.lengths"),
+                         header=F,sep="",na='NA',fill=T,skip = 3)%>% 
+                     magrittr::set_colnames(c('year','step','area','length','number'))
+#ecocadiz
+#----------------------------------------------------------------------------------------
+```
+
+
+
+```{r fig.height=5,fig.width=6,echo=FALSE}
+
+pelago1  <-data.frame(yrs=pelago$year,PELAGO=pelago$number)
+ecocadiz1<-data.frame(yrs=ecocadiz$year,ECOCADIZ=ecocadiz$number)
+indexplot<-merge(pelago1,ecocadiz1,by="yrs",all=TRUE) %>% melt(id.vars="yrs")
+
+ggplot()  +
+    geom_bar(data=indexplot, aes(x=yrs, y =value), 
+             stat="identity", fill='gray66', color = 'gray28') + 
+    facet_wrap(~variable,scale="free",dir = 'v', as.table = TRUE) + 
+    labs(x="Años", y="Índices de abundancia") +  
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color="gray66"))
+
+```
+
+### Descartes y tallas medias Formato `Gadget`
+
+En este modelo no se ingresan datos de estructuras de tallas.
+
+### Composición de tallas Formato `Gadget`
+
+```{r}
+#---------------------------------------------------------------------------------
+tallaspelago<-read.table(file=here('Data_Gadget',"catchdistribution.ldist.pelago.noage.sumofsquares"),
+                         header=F,sep="",na='NA',fill=T,skip = 3) %>% 
+               magrittr::set_colnames(c('year','step','area','age','length','number')) %>%
+                      separate(length,into=c("text","length"),sep=3,convert =TRUE)
+
+#tallaspelago
+#---------------------------------------------------------------------------------
+tallasecocadiz<-read.table(file=here('Data_Gadget',"catchdistribution.ldist.ecocadiz.noage.sumofsquares"),
+                         header=F,sep="",na='NA',fill=T,skip = 3) %>% 
+               magrittr::set_colnames(c('year','step','area','age','length','number')) %>%
+                      separate(length,into=c("text","length"),sep=3,convert =TRUE)
+
+#tallasecocadiz
+#---------------------------------------------------------------------------------
+tallasflota<-read.table(file=here('Data_Gadget',"catchdistribution.ldist.seine.sumofsquares"),
+                         header=F,sep="",na='NA',fill=T,skip = 3) %>% 
+               magrittr::set_colnames(c('year','step','area','age','length','number')) %>%
+                      separate(length,into=c("text","length"),sep=3,convert =TRUE)
+
+#tallasflota 
+#---------------------------------------------------------------------------------
+
+```
+
+
+```{r fig.height=10,fig.width=10,echo=FALSE}
+
+ggplot(tallaspelago) + 
+    geom_bar(aes(x = length, y = number/1000000), stat="identity", fill='gray66', color = 'gray28') + 
+    facet_grid(year~step,  as.table = TRUE,scales = "free") + 
+    labs(x = 'Tallas', y = 'Abundancia en número') +
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color=NA)) + 
+     ggtitle('PELAGO')+
+    theme(plot.title = element_text(size = 8))
+
+```
+
+```{r fig.height=10,fig.width=10,echo=FALSE}
+
+ggplot(tallasecocadiz) + 
+    geom_bar(aes(x = length, y = number/1000000), stat="identity", fill='gray66', color = 'gray28') + 
+   facet_grid(year~step,  as.table = TRUE,scales = "free") + 
+    labs(x = 'Tallas', y = 'Abundancia en número') +
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color=NA)) + 
+     ggtitle('ECOCADIZ')+
+    theme(plot.title = element_text(size = 8))
+
+```
+
+```{r fig.height=15,fig.width=10,echo=FALSE}
+
+ggplot(tallasflota) + 
+    geom_bar(aes(x = length, y = number/1000000), stat="identity", fill='gray66', color = 'gray28') + 
+    facet_grid(year~step,  as.table = TRUE,scales = "free") + 
+    labs(x = 'Tallas', y = 'Abundancia en número') +
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color=NA)) + 
+     ggtitle('FLOTA')+
+    theme(plot.title = element_text(size = 8))
+
+```
+
+# Clave talla-edad formato `Gadget`
+
+```{r }
+
+pelago.aldist<-read.table(file=here("Data_Gadget","catchdistribution.aldist.pelago.sumofsquares"),
+                        header=F,sep="",na='NA',fill=T,skip = 3)
+names(pelago.aldist)<-c('year','step','area','age','length','number')
+
+
+pelago.aldist$fleet   <- 2
+pelago.aldist$sex     <- 0
+pelago.aldist$part    <- 0
+pelago.aldist$ageerr  <- 2
+pelago.aldist$Lbin_lo <- pelago.aldist$length
+pelago.aldist$Lbin_hi <- pelago.aldist$length
+pelago.aldist$Nsamp   <- 10
+
+pelago.aldist_xxx<- pelago.aldist %>%
+                   separate(length,into=c("text","length"),sep=3,convert=TRUE)
+
+
+# Se transforma a formato SS3
+pelago.aldistSS3<- pelago.aldist %>%
+                   separate(length,into=c("text","length"),sep=3,convert=TRUE)%>% 
+                   separate(Lbin_lo,into=c("text","Lbin_lo"),sep=3,convert=TRUE)%>% 
+                   separate(Lbin_hi,into=c("text","Lbin_hi"),sep=3,convert=TRUE)%>% 
+                   arrange("Lbin_lo","Lbin_hi",'year','step','part','ageerr','Nsamp')%>% 
+                   spread(age,number)%>% 
+                   select(-area,-length,-text)
+pelago.aldistSS3[is.na(pelago.aldistSS3)] <- 0
+
+
+
+```
+
+
+```{r fig.height=15,fig.width=10,echo=FALSE}
+ggplot(pelago.aldist_xxx, aes(x=length, y=number,group=age,colour=as.character(age))) + 
+    geom_line()+
+    facet_grid(year~step,  as.table = TRUE,scales = "free") +
+    labs(x = 'Tallas', y = 'Abundancia en número') +
+    scale_colour_discrete(name  ="Grupos de Edad",
+                            labels=seq(0,4))+
+    theme(panel.background = element_rect(fill ="gray99")) +
+    theme(panel.grid=element_line(color=NA)) +
+     ggtitle('PELAGO')+
+    theme(plot.title = element_text(size = 8))
+```
+
+
+```{r }
+
+ecocadiz.aldist<-read.table(file=here("Data_Gadget","catchdistribution.aldist.ecocadiz.sumofsquares"),
+                        header=F,sep="",na='NA',fill=T,skip = 3)
+names(ecocadiz.aldist)<-c('year','step','area','age','length','number')
+
+ecocadiz.aldist$fleet   <- 3
+ecocadiz.aldist$sex     <- 0
+ecocadiz.aldist$part    <- 0
+ecocadiz.aldist$ageerr  <- 2
+ecocadiz.aldist$Lbin_lo <- ecocadiz.aldist$length
+ecocadiz.aldist$Lbin_hi <- ecocadiz.aldist$length
+ecocadiz.aldist$Nsamp   <- 10
+
+ecocadiz.aldist_xxx<- ecocadiz.aldist %>%
+                   separate(length,into=c("text","length"),sep=3,convert=TRUE)
+
+# Se transforma a formato SS3
+ecocadiz.aldistSS3  <-ecocadiz.aldist %>%
+                      separate(length,into=c("text","length"),sep=3,convert=TRUE)%>% 
+                      separate(Lbin_lo,into=c("text","Lbin_lo"),sep=3,convert=TRUE)%>% 
+                      separate(Lbin_hi,into=c("text","Lbin_hi"),sep=3,convert=TRUE)%>% 
+                      arrange("Lbin_lo","Lbin_hi",'year','step','part','ageerr','Nsamp')%>% 
+                      spread(age,number)%>% 
+                      select(-area,-length,-text)
+ecocadiz.aldistSS3[is.na(ecocadiz.aldistSS3)] <- 0
+
+```
+
+
+```{r fig.height=8,fig.width=8,echo=FALSE}
+ggplot(ecocadiz.aldist_xxx, aes(x=length, y=number,group=age,colour=as.character(age))) + 
+    geom_line()+
+    facet_grid(year~step,  as.table = TRUE,scales = "free") +
+    labs(x = 'Tallas', y = 'Abundancia en número') +
+    scale_colour_discrete(name  ="Grupos de Edad",
+                            labels=seq(0,4))+
+    theme(panel.background = element_rect(fill ="gray99")) +
+    theme(panel.grid=element_line(color=NA)) +
+     ggtitle('ECOCADIZ')+
+    theme(plot.title = element_text(size = 8))
+```
+
+
+```{r }
+
+fleet.ldist.alkseine<-read.table(file=here("Data_Gadget","catchdistribution.ldist.alkseine.sumofsquares"),
+                        header=F,sep="",na='NA',fill=T,skip = 3)
+names(fleet.ldist.alkseine)<-c('year','step','area','age','length','number')
+
+fleet.ldist.alkseine$fleet   <- 3
+fleet.ldist.alkseine$sex     <- 0
+fleet.ldist.alkseine$part    <- 0
+fleet.ldist.alkseine$ageerr  <- 2
+fleet.ldist.alkseine$Lbin_lo <- fleet.ldist.alkseine$length
+fleet.ldist.alkseine$Lbin_hi <- fleet.ldist.alkseine$length
+fleet.ldist.alkseine$Nsamp   <- 10
+
+fleet.ldist.alkseine_xxx <- fleet.ldist.alkseine %>%
+                           separate(length,into=c("text","length"),sep=3,convert=TRUE)
+
+
+# Se transforma a formato SS3
+fleet.ldist.alkseineSS3    <- fleet.ldist.alkseine %>%
+                              separate(length,into=c("text","length"),sep=3,convert=TRUE)%>% 
+                              separate(Lbin_lo,into=c("text","Lbin_lo"),sep=3,convert=TRUE)%>% 
+                              separate(Lbin_hi,into=c("text","Lbin_hi"),sep=3,convert=TRUE)%>% 
+                              arrange("Lbin_lo","Lbin_hi",'year','step','part','ageerr','Nsamp')%>% 
+                              spread(age,number)%>% 
+                              select(-area,-length,-text)
+fleet.ldist.alkseineSS3[is.na(fleet.ldist.alkseineSS3)] <- 0
+
+
+```
+
+
+```{r fig.height=12,fig.width=8,echo=FALSE}
+ggplot(fleet.ldist.alkseine_xxx, aes(x=length, y=number,group=age,colour=as.character(age))) + 
+    geom_line()+
+    facet_grid(year~step,  as.table = TRUE,scales = "free") +
+    labs(x = 'Tallas', y = 'Abundancia en número') +
+    scale_colour_discrete(name  ="Grupos de Edad",
+                            labels=seq(0,4))+
+    theme(panel.background = element_rect(fill ="gray99")) +
+    theme(panel.grid=element_line(color=NA)) +
+     ggtitle('FLOTA')+
+    theme(plot.title = element_text(size = 6))
+```
+
+
+
+\newpage
 
 ### Información general del modelo Formato `SS3`
 
@@ -72,47 +347,19 @@ dat1<-dat # para modificar
 
 ```{r}
 #Especificaciones iniciales
-dat1$styr           <-1971  #_StartYr
-dat1$endyr          <-2001  #_EndYr
-dat1$nseas          <-1     #_Nseas
-dat1$months_per_seas<-12    #_months/season
+dat1$styr           <-1989  #_StartYr
+dat1$endyr          <-2022  #_EndYr
+dat1$nseas          <-4     #_Nseas
+dat1$months_per_seas<-c(3,3,3,3)    #_months/season
 dat1$Nsubseasons    <-2     #_Nsubseasons (even number, minimum is 2)
-dat1$spawn_month    <-1     #_spawn_month (puesta alrededor de junio)
-dat1$Ngenders       <-2     #_Ngenders: 1, 2, -1  (use -1 for 1 sex setup with SSB 
+dat1$spawn_month    <-8     #_spawn_month (puesta alrededor de junio)
+dat1$Ngenders       <-1    #_Ngenders: 1, 2, -1  (use -1 for 1 sex setup with SSB 
                             # multiplied by female_frac parameter)
-dat1$Nsexes         <-2
-dat1$Nages          <-40    #_Nages=accumulator age, first age is always age 0
+dat1$Nsexes         <-1
+dat1$Nages          <-4    #_Nages=accumulator age, first age is always age 0
 dat1$N_areas        <-1     #_Nareas
 dat1$Nfleets        <-3     #_Nfleets (including surveys)
 ```
-
-\newpage
-### Capturas en formato `Gadget`
-
-Capturas anuales del stock (toneladas)
-
-```{r}
-
-# Se lee archivo de entrada Gadget
-capturas<-read.table(file=here('Data_Gadget',"fleet.seine.data"),
-                         header=F,sep="",na='NA',fill=T,skip = 3) %>% 
-             magrittr::set_colnames(c('year','step','area','vessel','number'))
-capturas
-```
-
-```{r fig.height=5,fig.width=8}
-
-capturaplot<-capturas %>% mutate(ytr=as.yearqtr(year + step/4))
-
-ggplot(capturaplot,aes(x=ytr,y=number/1000000))+
-  geom_line()+
-  geom_point()+
-   labs(x="Años/Trimestres", y="Capturas en número (millones)") +  
-   theme_bw() + 
-scale_x_yearqtr(format = "%Y-T%q")
-
-```
-
 
 ### Capturas en formato `SS3`
 
@@ -137,8 +384,8 @@ Primero ingresamos las especificaciones de los Datos de captura de la flota
 # Arreglo de datos
 fleetnames1       <-c("FLOTA", "PELAGO", "ECOCADIZ")     
 type1             <-c(1,3,3)
-surveytiming1     <-c(-1,1,1)
-units_of_catch1   <-c(2,1,1) 
+surveytiming1     <-c(-1,0.08,0.4)
+units_of_catch1   <-c(1,1,1) 
 areas1            <-c(1,1,1) 
 need_catch_mult1  <-c(0,0,0)
 #---------------------------------------------------------------------------------
@@ -151,7 +398,6 @@ fleetinfo1<-data.frame(type            = type1,
                        fleetname       = fleetnames1)
 #---------------------------------------------------------------------------------
 dat1$fleetinfo<-fleetinfo1     
-dat1$fleetinfo
 #---------------------------------------------------------------------------------
 ```
 
@@ -167,11 +413,11 @@ dat1$fleetinfo
 year           <- capturas$year
 nyear          <- length(year)
 
-catch_year     <- c(-999,year)
-catch_seas     <- c(0,capturas$step)
-catch_fleet    <- rep(1,nyear+1)
-catch_catch    <- c(0,capturas$number)
-catch_catch_se <- rep(0.01,nyear+1) # se asume cv = 0.01 Revisar!!!!
+catch_year     <- c(rep(-999,4),year)
+catch_seas     <- c(seq(1,4,1),capturas$step)
+catch_fleet    <- rep(1,nyear+4)
+catch_catch    <- c(rep(0,4),capturas$number)
+catch_catch_se <- rep(0.01,nyear+4) # se asume cv = 0.01 Revisar!!!!
 #---------------------------------------------------------------------------------
 # crear data.frame 
 catch1<-data.frame(year     = catch_year,
@@ -181,54 +427,12 @@ catch1<-data.frame(year     = catch_year,
                    catch_se = catch_catch_se)
 #---------------------------------------------------------------------------------
 dat1$catch<-catch1 
-dat1$catch
 #---------------------------------------------------------------------------------
 ```
 
 - La primera línea del fragmento de código anterior muestra los encabezados de columna para los datos de captura. 
 
 - Tenga en cuenta que toda la captura proviene de la pesquería. La línea `-999 1 1 0 0.01` especifica la captura  de equilibrio para los años anteriores al inicio del modelo; en este caso, no hay captura de equilibrio porque la columna de captura es 0.
-
-
-\newpage
-
-### Indices de abundancia formato `Gadget`
-
-
-```{r}
-#----------------------------------------------------------------------------------------
-pelago<-read.table(file=here('Data_Gadget',"surveyindices.pelagonumber.survey.lengths"),
-                         header=F,sep="",na='NA',fill=T,skip = 3) %>% 
-                     magrittr::set_colnames(c('year','step','area','length','number'))
-pelago
-#----------------------------------------------------------------------------------------
-ecocadiz<-read.table(file=here('Data_Gadget',"surveyindices.ecocadiz.survey.lengths"),
-                         header=F,sep="",na='NA',fill=T,skip = 3)%>% 
-                     magrittr::set_colnames(c('year','step','area','length','number'))
-ecocadiz
-#----------------------------------------------------------------------------------------
-```
-
-
-
-```{r fig.height=5,fig.width=6}
-
-pelago1  <-data.frame(yrs=pelago$year,PELAGO=pelago$number)
-ecocadiz1<-data.frame(yrs=ecocadiz$year,ECOCADIZ=ecocadiz$number)
-indexplot<-merge(pelago1,ecocadiz1,by="yrs",all=TRUE) %>% melt(id.vars="yrs")
-
-ggplot()  +
-    geom_bar(data=indexplot, aes(x=yrs, y =value), 
-             stat="identity", fill='gray66', color = 'gray28') + 
-    facet_wrap(~variable,scale="free",dir = 'v', as.table = TRUE) + 
-    labs(x="Años", y="Índices de abundancia") +  
-    theme(panel.background = element_rect(fill ="gray99")) + 
-    theme(panel.grid=element_line(color="gray66"))
-
-```
-
-
-
 
 ### Indices de abundancia formato `SS3`
 
@@ -263,7 +467,7 @@ CPUEinfo1<-data.frame(Fleet     = CPUEinfo_Fleet,
 row.names(CPUEinfo1)<-CPUEinfo_names
 #---------------------------------------------------------------------------------
 dat1$CPUEinfo<-CPUEinfo1 
-dat1$CPUEinfo
+#dat1$CPUEinfo
 #---------------------------------------------------------------------------------
 ```
 
@@ -302,15 +506,9 @@ CPUE1<-data.frame(year   = CPUE_year,
                   se_log = CPUE_se_log)
 #---------------------------------------------------------------------------------
 dat1$CPUE<-CPUE1 
-dat1$CPUE
+#dat1$CPUE
 #---------------------------------------------------------------------------------
 ```
-
-\newpage
-
-### Descartes y tallas medias Formato `Gadget`
-
-En este modelo no se ingresan datos de estructuras de tallas.
 
 ### Descartes y tallas medias Formato `SS3`
 
@@ -350,77 +548,6 @@ dat1$use_meanbodywt<-0 #_use meanbodysize_data (0/1)
 #---------------------------------------------------------------------------------
 #  -9999 0 0 0 0 0 0 # terminator for mean body size data 
 ```
-
-\newpage
-### Composición de tallas Formato `Gadget`
-
-```{r}
-#---------------------------------------------------------------------------------
-tallaspelago<-read.table(file=here('Data_Gadget',"catchdistribution.ldist.pelago.noage.sumofsquares"),
-                         header=F,sep="",na='NA',fill=T,skip = 3) %>% 
-               magrittr::set_colnames(c('year','step','area','age','length','number')) %>%
-                      separate(length,into=c("text","length"),sep=3,convert =TRUE)
-
-#tallaspelago
-#---------------------------------------------------------------------------------
-tallasecocadiz<-read.table(file=here('Data_Gadget',"catchdistribution.ldist.ecocadiz.noage.sumofsquares"),
-                         header=F,sep="",na='NA',fill=T,skip = 3) %>% 
-               magrittr::set_colnames(c('year','step','area','age','length','number')) %>%
-                      separate(length,into=c("text","length"),sep=3,convert =TRUE)
-
-#tallasecocadiz
-#---------------------------------------------------------------------------------
-tallasflota<-read.table(file=here('Data_Gadget',"catchdistribution.ldist.seine.sumofsquares"),
-                         header=F,sep="",na='NA',fill=T,skip = 3) %>% 
-               magrittr::set_colnames(c('year','step','area','age','length','number')) %>%
-                      separate(length,into=c("text","length"),sep=3,convert =TRUE)
-
-#tallasflota 
-#---------------------------------------------------------------------------------
-
-```
-
-
-```{r fig.height=10,fig.width=10}
-
-ggplot(tallaspelago) + 
-    geom_bar(aes(x = length, y = number/1000000), stat="identity", fill='gray66', color = 'gray28') + 
-    facet_grid(year~step,  as.table = TRUE,scales = "free") + 
-    labs(x = 'Tallas', y = 'Abundancia en número') +
-    theme(panel.background = element_rect(fill ="gray99")) + 
-    theme(panel.grid=element_line(color=NA)) + 
-     ggtitle('PELAGO')+
-    theme(plot.title = element_text(size = 8))
-
-```
-
-```{r fig.height=10,fig.width=10}
-
-ggplot(tallasecocadiz) + 
-    geom_bar(aes(x = length, y = number/1000000), stat="identity", fill='gray66', color = 'gray28') + 
-   facet_grid(year~step,  as.table = TRUE,scales = "free") + 
-    labs(x = 'Tallas', y = 'Abundancia en número') +
-    theme(panel.background = element_rect(fill ="gray99")) + 
-    theme(panel.grid=element_line(color=NA)) + 
-     ggtitle('ECOCADIZ')+
-    theme(plot.title = element_text(size = 8))
-
-```
-
-```{r fig.height=15,fig.width=10}
-
-ggplot(tallasflota) + 
-    geom_bar(aes(x = length, y = number/1000000), stat="identity", fill='gray66', color = 'gray28') + 
-    facet_grid(year~step,  as.table = TRUE,scales = "free") + 
-    labs(x = 'Tallas', y = 'Abundancia en número') +
-    theme(panel.background = element_rect(fill ="gray99")) + 
-    theme(panel.grid=element_line(color=NA)) + 
-     ggtitle('FLOTA')+
-    theme(plot.title = element_text(size = 8))
-
-```
-
-
 
 ### Composición de tallas Formato `SS3`
 La siguiente sección configura los intervalos de talla (`length bin`) de la población. 
@@ -488,7 +615,7 @@ len_info1<-data.frame(mintailcomp     = len_info_mintailcomp,
 row.names(len_info1)<-fleetnames1 
 #---------------------------------------------------------------------------------
 dat1$len_info<-len_info1 #data.frame
-dat1$len_info
+#dat1$len_info
 #---------------------------------------------------------------------------------
 ```
 
@@ -551,147 +678,197 @@ dat1$lencomp<-new_lencomp1
 #---------------------------------------------------------------------------------
 ```
 
+### Composición de edad Formato `SS3`
+A continuación se presentan los datos de composición por edad. En primer lugar, se establecen las categorías de edad y las definiciones de error de edad.
+
+[Consulte la Guía de usuario de SS3: Sección 7.16 "Age Composition Option"](https://nmfs-stock-synthesis.github.io/doc/SS330_User_Manual.html#age-composition-option).
+
+#### Bins de edad
+\quad
+```{r}
+dat1$N_agebins<-0 
+dat1$agebin_vector<-"#"
+```
+
+#### Datos de error edad
+\quad
+```{r}
+# Arreglo de datos
+matrix_ageerror<-"#"
+#---------------------------------------------------------
+dat1$N_ageerror_definitions<- "#" #_N_ageerror_definitions
+dat1$ageerror<-matrix_ageerror #_ageerror_definitions
+```
+
+#### Especificaciones de los datos de composicion de edad
+\quad
+```{r}
+#------------------------------------------------------------------------------------------
+#_mintailcomp:  upper and lower distribution for females and males separately are 
+#               accumulated until exceeding this level.
+#_addtocomp:    after accumulation of tails; this value added to all bins
+#_combM+F:      males and females treated as combined gender below this bin number 
+#_compressbins: accumulate upper tail by this number of bins; acts simultaneous 
+#               with mintailcomp; set=0 for no forced accumulation
+#_Comp_Error:   0=multinomial, 
+#               1=dirichlet using Theta*n, 
+#               2=dirichlet using beta, 
+#               3=MV_Tweedie
+#_ParmSelect:   consecutive index for dirichlet or MV_Tweedie
+#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001
+#
+#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize
+#------------------------------------------------------------------------------------------
+# crear data.frame 
+age_info1<-data.frame(mintailcomp="#",
+                      addtocomp="#",
+                      combine_M_F="#",
+                      CompressBins="#",
+                      CompError="#",
+                      ParmSelect="#",
+                      minsamplesize="#")
+
+row.names(age_info1)<-"#"
+#---------------------------------------------------------------------------------
+dat1$age_info<-age_info1 
+#---------------------------------------------------------------------------------
+```
+
+#### Datos de composicion de edad
+\quad
+```{r}
+#------------------------------------------------------------------------------------------
+dat1$Lbin_method <- "#" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths
+#------------------------------------------------------------------------------------------
+# sex codes:  0=combined; 
+#             1=use female only; 
+#             2=use male only; 
+#             3=use both as joint sexxlength distribution
+# partition codes:  (0=combined; 
+#                    1=discard; 
+#                    2=retained
+#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)
+#------------------------------------------------------------------------------------------
+# Arreglo de datos
+new_agecomp<-data.frame(Yr="#", 
+                        Seas="#", 
+                        FltSvy="#", 
+                        Gender="#", 
+                        Part="#",  
+                        Ageerr="#", 
+                        Lbin_lo="#", 
+                        Lbin_hi="#", 
+                        Nsamp="#")
+
+
+dat_rows_names<- "#" #paste("E",seq(0,5,1),sep="")
+
+#names(data.age)<-dat_rows_names 
+
+new_agecomp<- "#" #cbind(new_agecomp, data.age)
+#---------------------------------------------------------------------------------
+dat1$agecomp<-new_agecomp
+#---------------------------------------------------------------------------------
+``` 
 
 \newpage
 
+### Otros datos
 
+#### Tallas medias a la edad
+\quad
+```{r}
+#---------------------------------------------------------------------------------
+dat1$use_MeanSize_at_Age_obs <- 0 #_Use_MeanSize-at-Age_obs (0/1)
+#---------------------------------------------------------------------------------
+# sex codes:  0=combined; 
+#             1=use female only; 
+#             2=use male only; 
+#             3=use both as joint sexxlength distribution
+# partition codes:  (0=combined; 
+#                    1=discard; 
+#                    2=retained
+# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age
+#_yr month fleet sex part ageerr ignore datavector(female-male)
+#                                          samplesize(female-male)
+#---------------------------------------------------------------------------------
+# Arreglo de datos
+MeanSize_at_Age_obs_esp<-data.frame(Yr="# -9999",
+                                    Seas=0,
+                                    FltSvy=0,
+                                    Gender=0,
+                                    Part=0,
+                                    AgeErr=0,
+                                    Ignore=0)
 
-
-```{r }
-
-pelago.aldist<-read.table(file=here("Data_Gadget","catchdistribution.aldist.pelago.sumofsquares"),
-                        header=F,sep="",na='NA',fill=T,skip = 3)
-names(pelago.aldist)<-c('year','step','area','age','length','number')
-
-
-pelago.aldist$fleet   <- 2
-pelago.aldist$sex     <- 0
-pelago.aldist$part    <- 0
-pelago.aldist$ageerr  <- 2
-pelago.aldist$Lbin_lo <- pelago.aldist$length
-pelago.aldist$Lbin_hi <- pelago.aldist$length
-pelago.aldist$Nsamp   <- 10
-
-pelago.aldist_xxx<- pelago.aldist %>%
-                   separate(length,into=c("text","length"),sep=3,convert=TRUE)
-
-
-# Se transforma a formato SS3
-pelago.aldistSS3<- pelago.aldist %>%
-                   separate(length,into=c("text","length"),sep=3,convert=TRUE)%>% 
-                   separate(Lbin_lo,into=c("text","Lbin_lo"),sep=3,convert=TRUE)%>% 
-                   separate(Lbin_hi,into=c("text","Lbin_hi"),sep=3,convert=TRUE)%>% 
-                   arrange("Lbin_lo","Lbin_hi",'year','step','part','ageerr','Nsamp')%>% 
-                   spread(age,number)%>% 
-                   select(-area,-length,-text)
-pelago.aldistSS3[is.na(pelago.aldistSS3)] <- 0
-
-
-
+dat_rows_names <- "#" #c(paste("L",seq(0,5,1),sep=""),paste("nmL",seq(0,5,1),sep="")) # los datos de esta matriz son las tallas medias por edad y tamaño de muestra...corregir!!!!
+dat_rows <- as.data.frame(matrix(data = 0, 
+                                 nrow = nrow(MeanSize_at_Age_obs_esp), 
+                                 ncol = length(dat_rows_names)))
+names(dat_rows)<-dat_rows_names 
+#---------------------------------------------------------------------------------
+# crear data.frame 
+MeanSize_at_Age_obs1 <-cbind(MeanSize_at_Age_obs_esp, dat_rows)
+#---------------------------------------------------------------------------------
+dat1$MeanSize_at_Age_obs<-MeanSize_at_Age_obs1 
+#---------------------------------------------------------------------------------
 ```
 
-
-```{r }
-ggplot(pelago.aldist_xxx, aes(x=length, y=number,group=age,colour=as.character(age))) + 
-    geom_line()+
-    facet_grid(year~step,  as.table = TRUE,scales = "free") +
-    labs(x = 'Tallas', y = 'Abundancia en número') +
-    scale_colour_discrete(name  ="Grupos de Edad",
-                            labels=seq(0,4))+
-    theme(panel.background = element_rect(fill ="gray99")) +
-    theme(panel.grid=element_line(color=NA)) +
-     ggtitle('PELAGO')+
-    theme(plot.title = element_text(size = 8))
+#### Datos ambientales 
+\quad
+(tarea = buscar ejemplo donde ingresen estos datos)
+```{r}
+dat1$N_environ_variables<-0 #_N_environ_variables
+# -2 in yr will subtract mean for that env_var; 
+# -1 will subtract mean and divide by stddev (e.g. Z-score)
+#Yr Variable Value
+#
 ```
 
-
-```{r }
-
-ecocadiz.aldist<-read.table(file=here("Data_Gadget","catchdistribution.aldist.ecocadiz.sumofsquares"),
-                        header=F,sep="",na='NA',fill=T,skip = 3)
-names(ecocadiz.aldist)<-c('year','step','area','age','length','number')
-
-ecocadiz.aldist$fleet   <- 3
-ecocadiz.aldist$sex     <- 0
-ecocadiz.aldist$part    <- 0
-ecocadiz.aldist$ageerr  <- 2
-ecocadiz.aldist$Lbin_lo <- ecocadiz.aldist$length
-ecocadiz.aldist$Lbin_hi <- ecocadiz.aldist$length
-ecocadiz.aldist$Nsamp   <- 10
-
-ecocadiz.aldist_xxx<- ecocadiz.aldist %>%
-                   separate(length,into=c("text","length"),sep=3,convert=TRUE)
-
-# Se transforma a formato SS3
-ecocadiz.aldistSS3  <-ecocadiz.aldist %>%
-                      separate(length,into=c("text","length"),sep=3,convert=TRUE)%>% 
-                      separate(Lbin_lo,into=c("text","Lbin_lo"),sep=3,convert=TRUE)%>% 
-                      separate(Lbin_hi,into=c("text","Lbin_hi"),sep=3,convert=TRUE)%>% 
-                      arrange("Lbin_lo","Lbin_hi",'year','step','part','ageerr','Nsamp')%>% 
-                      spread(age,number)%>% 
-                      select(-area,-length,-text)
-ecocadiz.aldistSS3[is.na(ecocadiz.aldistSS3)] <- 0
-
+#### Sizefreq data 
+\quad
+(tarea = buscar ejemplo donde ingresen estos datos)
+```{r}
+# Sizefreq data. Defined by method because a fleet can use multiple methods
+dat1$N_sizefreq_methods<-0 # N sizefreq methods to read (or -1 for expanded options)
 ```
 
-
-```{r }
-ggplot(ecocadiz.aldist_xxx, aes(x=length, y=number,group=age,colour=as.character(age))) + 
-    geom_line()+
-    facet_grid(year~step,  as.table = TRUE,scales = "free") +
-    labs(x = 'Tallas', y = 'Abundancia en número') +
-    scale_colour_discrete(name  ="Grupos de Edad",
-                            labels=seq(0,4))+
-    theme(panel.background = element_rect(fill ="gray99")) +
-    theme(panel.grid=element_line(color=NA)) +
-     ggtitle('ECOCADIZ')+
-    theme(plot.title = element_text(size = 8))
+#### Datos de tags
+\quad
+(tarea = buscar ejemplo donde ingresen estos datos)
+```{r}
+dat1$do_tags<-0 # do tags (0/1/2); where 2 allows entry of TG_min_recap
 ```
 
-
-```{r }
-
-fleet.ldist.alkseine<-read.table(file=here("Data_Gadget","catchdistribution.ldist.alkseine.sumofsquares"),
-                        header=F,sep="",na='NA',fill=T,skip = 3)
-names(fleet.ldist.alkseine)<-c('year','step','area','age','length','number')
-
-fleet.ldist.alkseine$fleet   <- 3
-fleet.ldist.alkseine$sex     <- 0
-fleet.ldist.alkseine$part    <- 0
-fleet.ldist.alkseine$ageerr  <- 2
-fleet.ldist.alkseine$Lbin_lo <- fleet.ldist.alkseine$length
-fleet.ldist.alkseine$Lbin_hi <- fleet.ldist.alkseine$length
-fleet.ldist.alkseine$Nsamp   <- 10
-
-fleet.ldist.alkseine_xxx <- fleet.ldist.alkseine %>%
-                           separate(length,into=c("text","length"),sep=3,convert=TRUE)
-
-
-# Se transforma a formato SS3
-fleet.ldist.alkseineSS3    <- fleet.ldist.alkseine %>%
-                              separate(length,into=c("text","length"),sep=3,convert=TRUE)%>% 
-                              separate(Lbin_lo,into=c("text","Lbin_lo"),sep=3,convert=TRUE)%>% 
-                              separate(Lbin_hi,into=c("text","Lbin_hi"),sep=3,convert=TRUE)%>% 
-                              arrange("Lbin_lo","Lbin_hi",'year','step','part','ageerr','Nsamp')%>% 
-                              spread(age,number)%>% 
-                              select(-area,-length,-text)
-fleet.ldist.alkseineSS3[is.na(fleet.ldist.alkseineSS3)] <- 0
-
-
+#### Datos de morfos 
+\quad
+(tarea = buscar ejemplo donde ingresen estos datos)
+```{r}
+dat1$morphcomp_data<-0 #    morphcomp data(0/1) 
+#  Nobs, Nmorphs, mincomp
+#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs
+#
 ```
 
-
-```{r fig.height=10,fig.width=8}
-ggplot(fleet.ldist.alkseine_xxx, aes(x=length, y=number,group=age,colour=as.character(age))) + 
-    geom_line()+
-    facet_grid(year~step,  as.table = TRUE,scales = "free") +
-    labs(x = 'Tallas', y = 'Abundancia en número') +
-    scale_colour_discrete(name  ="Grupos de Edad",
-                            labels=seq(0,4))+
-    theme(panel.background = element_rect(fill ="gray99")) +
-    theme(panel.grid=element_line(color=NA)) +
-     ggtitle('FLOTA')+
-    theme(plot.title = element_text(size = 8))
+##### Priors de selectividad
+\quad
+(tarea = buscar ejemplo donde ingresen estos datos)
+```{r}
+dat1$use_selectivity_priors<-0 #  Do dataread for selectivity priors(0/1)
+# Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd
+# feature not yet implemented
+#
 ```
 
+#### Final de archivo data.ss
+\quad
+imprime línea final
+```{r}
+dat1$eof<-TRUE 
+```
+
+###  Escribir archivo de datos modificado con la función  `SS_write` para el enfoque de modelación `SS3`
+```{r eval=T}
+r4ss::SS_writedat(dat1,outfile=here(dirname.simple_mod,"data.ss"),overwrite = TRUE)
+```
 
