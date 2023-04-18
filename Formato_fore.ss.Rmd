@@ -5,8 +5,9 @@ date: '`r format(Sys.Date(),"%B, %d, %Y")`'
 output: 
   pdf_document:
    toc: TRUE
+   toc_depth: '3'
    number_sections: yes
-urlcolor: blue   
+urlcolor: blue      
 ---
 
 
@@ -16,6 +17,22 @@ knitr::opts_chunk$set(echo=T, warning=FALSE, message=FALSE,collapse=TRUE,fig.ali
 ```
 
 
+# Descripción del repositorio
+
+- Directorio con archivos requeridos para ejecutar GADGET
+- Directorio con archivos requeridos para ejecutar SS3
+- Directorio con ejecutable SS3 para tres sistemas operativos (windows, linux y mac)
+- Códigos Rmarkdown (pdf o html) que permita modificar archivos SS3
+    - formato data.ss
+    - formato contro.ss
+    - formato starter.ss
+    - formato forecast.ss
+
+# Descargar archivos requeridos desde repositorio
+
+Tarea pendiente....
+
+# Librerias requeridas
 
 ```{r results='hide',include=FALSE}
 ## Librerías requeridas
@@ -24,19 +41,24 @@ knitr::opts_chunk$set(echo=T, warning=FALSE, message=FALSE,collapse=TRUE,fig.ali
  lapply(paquetes, require, character.only = TRUE)
 ```
 
-# Contexto
+
 
 ## Identificamos los directorio de trabajo
 ```{r}
 dirname.base <- here("simple")
-dirname.simple_base <- here("simple_base")
-dirname.simple_mod <- here("simple_modificado")
+dirname_base <- here("simple_base")
+dirname_mod <- here("simple_modificado")
 ```
 
 ## Leer los archivos de Stock Synthesis  con la función `SS_read()`
 
 ```{r}
 inputs <- r4ss::SS_read(dir = dirname.simple_mod)
+names(inputs)
+# #trabajaremos con archivo ctl
+# fore<-inputs$ctl # archivo base
+# ctl1<-ctl # archivo modificado
+
 ```
 
 ## Investigar el modelo 
