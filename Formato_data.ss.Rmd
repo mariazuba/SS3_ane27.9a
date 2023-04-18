@@ -1,10 +1,11 @@
 ---
-title: "Formato  Archivo  Data.ss"
+title: "Transición de  archivos de datos GADGET a SS3 de boqueron Cádiz"
 author: " "
 date: '`r format(Sys.Date(),"%B, %d, %Y")`'
 output: 
   pdf_document:
    toc: TRUE
+   toc_depth: '3'
    number_sections: yes
 urlcolor: blue   
 ---
@@ -17,6 +18,27 @@ knitr::opts_chunk$set(echo=T, warning=FALSE, message=FALSE,collapse=TRUE,fig.ali
 
 
 
+
+
+\newpage
+# Descripción del repositorio
+
+- Directorio con archivos requeridos para ejecutar GADGET
+- Directorio con archivos requeridos para ejecutar SS3
+- Directorio con ejecutable SS3 para tres sistemas operativos (windows, linux y mac)
+- Códigos Rmarkdown (pdf o html) que permita modificar archivos SS3
+    - formato data.ss
+    - formato contro.ss
+    - formato starter.ss
+    - formato forecast.ss
+
+# Descargar archivos requeridos desde repositorio
+
+Tarea pendiente....
+
+# Librerias requeridas
+
+
 ```{r results='hide',include=FALSE}
 ## Librerías requeridas
  paquetes <- c("stringr", "tidyverse", "kableExtra","ggplot2","ggthemes",
@@ -24,34 +46,17 @@ knitr::opts_chunk$set(echo=T, warning=FALSE, message=FALSE,collapse=TRUE,fig.ali
  lapply(paquetes, require, character.only = TRUE)
 ```
 
-## Archivos utilizado para enfoque de modelación `SS3`
-1. Identificamos el directorio donde se encuentra el modelo base simple
+
+
+# Descripción del Formado de entrada de datos requerido para cada enfoque de modelación
+
+## Identificación de los archivos de  datos GADGET
+
+Se utilizarán los siguientes archivos de entrada de datos de Gadget:
+
 ```{r}
-dirname.base <- here("modelos_SS3","simple")
+dir(here('Data_Gadget'))
 ```
-
-3. Creamos un nuevo directorio para la nueva versión del modelo modificado 
-```{r}
-dirname.simple_mod <- here("boqueron_SS3")
-dir.create(path=dirname.simple_mod, showWarnings = TRUE, recursive = TRUE)
-```
-
-5. Copiamos los archivos para el modelo que vamos a  modificar
-```{r}
-copy_SS_inputs(dir.old = dirname.base, 
-               dir.new = dirname.simple_mod,
-               copy_exe = TRUE,
-               verbose = FALSE)
-```
-
-\newpage
-# Descripción del Formado de entrada de datos para cada enfoque de modelación
-
-## Archivo data
-
-### Información general del modelo Formato `Gadget`
-
-Buscar esta información en archivos entregados!!!
 
 ### Capturas en formato `Gadget`
 
@@ -114,11 +119,8 @@ ggplot()  +
 
 ```
 
-### Descartes y tallas medias Formato `Gadget`
 
-En este modelo no se ingresan datos de estructuras de tallas.
-
-### Composición de tallas Formato `Gadget`
+### Composiciones de tallas Formato `Gadget`
 
 ```{r}
 #---------------------------------------------------------------------------------
@@ -186,7 +188,7 @@ ggplot(tallasflota) +
 
 ```
 
-# Clave talla-edad formato `Gadget`
+### Clave talla-edad formato `Gadget`
 
 ```{r }
 
@@ -329,6 +331,33 @@ ggplot(fleet.ldist.alkseine_xxx, aes(x=length, y=number,group=age,colour=as.char
 
 \newpage
 
+## Identificación de los archivos de  datos SS3
+
+### Archivos utilizado para enfoque de modelación `SS3`
+
+#### Identificamos el directorio donde se encuentra el modelo base 
+\quad
+```{r}
+#bajarlo desde Github SS3
+dirname.base <- here("modelos_SS3","simple")
+```
+
+#### Creamos un nuevo directorio para la nueva versión del modelo modificado 
+\quad
+```{r}
+dirname.simple_mod <- here("boqueron_SS3")
+dir.create(path=dirname.simple_mod, showWarnings = TRUE, recursive = TRUE)
+```
+
+#### Copiamos los archivos para el modelo que vamos a  modificar
+\quad
+```{r}
+copy_SS_inputs(dir.old = dirname.base, 
+               dir.new = dirname.simple_mod,
+               copy_exe = TRUE,
+               verbose = FALSE)
+```
+
 ### Información general del modelo Formato `SS3`
 
 En la parte superior se especifica información general del modelo: los años del modelo, número de temporadas, número de sexos, edad máxima, número de áreas, número de flotas  
@@ -336,7 +365,8 @@ En la parte superior se especifica información general del modelo: los años de
 [Consulte la Guía de usuario de SS3: Sección 7.5 "Model Dimensions"](https://nmfs-stock-synthesis.github.io/doc/SS330_User_Manual.html#model-dimensions).
 
 
-Revisamos los nombres de los componentes de la lista del archivo .dat
+Revisamos los nombres de los componentes de la lista del archivo `.dat`
+
 ```{r}
 
 dat <- r4ss::SS_readdat(here(dirname.base,"data.ss")) #base
@@ -835,14 +865,14 @@ dat1$N_sizefreq_methods<-0 # N sizefreq methods to read (or -1 for expanded opti
 
 #### Datos de tags
 \quad
-(tarea = buscar ejemplo donde ingresen estos datos)
+
 ```{r}
 dat1$do_tags<-0 # do tags (0/1/2); where 2 allows entry of TG_min_recap
 ```
 
 #### Datos de morfos 
 \quad
-(tarea = buscar ejemplo donde ingresen estos datos)
+
 ```{r}
 dat1$morphcomp_data<-0 #    morphcomp data(0/1) 
 #  Nobs, Nmorphs, mincomp
@@ -852,7 +882,7 @@ dat1$morphcomp_data<-0 #    morphcomp data(0/1)
 
 ##### Priors de selectividad
 \quad
-(tarea = buscar ejemplo donde ingresen estos datos)
+
 ```{r}
 dat1$use_selectivity_priors<-0 #  Do dataread for selectivity priors(0/1)
 # Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd
@@ -867,7 +897,9 @@ imprime línea final
 dat1$eof<-TRUE 
 ```
 
-###  Escribir archivo de datos modificado con la función  `SS_write` para el enfoque de modelación `SS3`
+
+
+##  Escribir archivo de datos modificado con la función  `SS_write` para el enfoque de modelación `SS3`
 ```{r eval=T}
 r4ss::SS_writedat(dat1,outfile=here(dirname.simple_mod,"data.ss"),overwrite = TRUE)
 ```
