@@ -5,8 +5,9 @@ date: '`r format(Sys.Date(),"%B, %d, %Y")`'
 output: 
   pdf_document:
    toc: TRUE
+   toc_depth: '3'
    number_sections: yes
-urlcolor: blue   
+urlcolor: blue    
 ---
 
 
@@ -16,6 +17,23 @@ knitr::opts_chunk$set(echo=T, warning=FALSE, message=FALSE,collapse=TRUE,fig.ali
 ```
 
 
+# Descripción del repositorio
+
+- Directorio con archivos requeridos para ejecutar GADGET
+- Directorio con archivos requeridos para ejecutar SS3
+- Directorio con ejecutable SS3 para tres sistemas operativos (windows, linux y mac)
+- Códigos Rmarkdown (pdf o html) que permita modificar archivos SS3
+    - formato data.ss
+    - formato contro.ss
+    - formato starter.ss
+    - formato forecast.ss
+
+# Descargar archivos requeridos desde repositorio
+
+Tarea pendiente....
+
+# Librerias requeridas
+
 
 ```{r results='hide',include=FALSE}
 ## Librerías requeridas
@@ -24,74 +42,95 @@ knitr::opts_chunk$set(echo=T, warning=FALSE, message=FALSE,collapse=TRUE,fig.ali
  lapply(paquetes, require, character.only = TRUE)
 ```
 
-# Contexto
+## Identificación de los archivos de  datos SS3
 
-## Identificamos los directorio de trabajo
+### Archivos utilizado para enfoque de modelación `SS3`
+
+#### Identificamos el directorio donde se encuentra el modelo base 
+\quad
 ```{r}
-dirname.base <- here("simple")
-dirname.simple_base <- here("simple_base")
-dirname.simple_mod <- here("simple_modificado")
+# por ahora tomare el archivo que ejecuta bien de boqueron como base, 
+# despues cambiarlo a modelo simple
+dirname.base <- here("10a_anchcadiz")
+```
+
+#### Creamos un nuevo directorio para la nueva versión del modelo modificado 
+\quad
+```{r}
+dirname.mod <- here("boqueron_SS3")
+# si el directorio no está creado, utilizar la siguiente función:
+#dir.create(path=dirname.mod, showWarnings = TRUE, recursive = TRUE)
 ```
 
 ## Leer los archivos de Stock Synthesis  con la función `SS_read()`
 
-```{r}
-inputs <- r4ss::SS_read(dir = dirname.simple_mod)
-```
-
-## Investigar el modelo 
-
- Cada uno de los archivos de entrada se lee en R como una lista. 
+Cada uno de los archivos de entrada se lee en R como una lista. 
  
  Use `names()` para ver todos los componentes de la lista
 
-
-## Revisamos los elementos de la lista
 ```{r}
-names(inputs) 
+inputs <- r4ss::SS_read(dir = dirname.base)
+## Revisamos los elementos de la lista
+names(inputs)
+```
+
+
+```{r}
+#trabajaremos con archivo start
+start<-inputs$start # archivo base
+start1<-start # archivo modificado
 ```
 
 
 ## Revisamos los nombres de los componentes de la lista del archivo starter
-```{r}
-names(inputs$start) 
+```{r eval=F}
+matrix(names(start),ncol=1) 
 ```
 
 ```{r}
-inputs$start[1]
-inputs$start[2]
-inputs$start[3]
-inputs$start[4]
-inputs$start[5]
-inputs$start[6]
-inputs$start[7]
-inputs$start[8]
-inputs$start[9]
-inputs$start[10]
-inputs$start[11]
-inputs$start[12]
-inputs$start[13]
-inputs$start[14]
-inputs$start[15]
-inputs$start[16]
-inputs$start[17]
-inputs$start[18]
-inputs$start[19]
-inputs$start[20]
-inputs$start[21]
-inputs$start[22]
-inputs$start[23]
-inputs$start[24]
-inputs$start[25]
-inputs$start[26]
-inputs$start[27]
-inputs$start[28]
-inputs$start[29]
-inputs$start[30]
-inputs$start[31]
-inputs$start[32]
-inputs$start[33]
-inputs$start[34]
+#start1$sourcefile           # no se modifica
+#start1$type                 # no se modifica
+#start1$SSversion            # no se modifica
+start1$datfile                <- "data.ss"
+start1$ctlfile                <- "control.ss"
+start1$init_values_src        <-0
+start1$run_display_detail     <-1
+start1$detailed_age_structure <-1
+start1$checkup                <-0
+start1$parmtrace              <-0
+start1$cumreport              <-0
+start1$prior_like             <-0
+start1$soft_bounds            <-0
+start1$N_bootstraps           <-1
+start1$last_estimation_phase  <-100
+start1$MCMCburn               <- 1
+start1$MCMCthin               <- 1
+start1$jitter_fraction        <- 0
+start1$minyr_sdreport         <- -1
+start1$maxyr_sdreport         <- -2
+start1$N_STD_yrs              <- 0
+start1$converge_criterion     <- 1e-05
+start1$retro_yr               <- -4
+start1$min_age_summary_bio    <- 0
+start1$depl_basis             <- 1
+start1$depl_denom_frac        <- 1
+start1$SPR_basis              <- 4
+start1$F_report_units         <- 0
+start1$F_age_range            <- 0
+start1$F_report_basis         <- 0
+start1$MCMC_output_detail     <- 0
+start1$ALK_tolerance          <- 0
+start1$final                  <- 3.3
 
 ```
 
+###  Escribir archivo de starter modificado con la función  `SS_write` para el enfoque de modelación `SS3`
+```{r eval=T}
+#----------------------------------------------------------------
+r4ss::SS_writestarter(mylist=start1,
+                      dir=here(dirname.mod),
+                      file="starter.ss",
+                      overwrite = TRUE,
+                      verbose = TRUE)
+#----------------------------------------------------------------
+```
