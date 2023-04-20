@@ -84,7 +84,7 @@ start1<-start # archivo modificado
 
 ## Revisamos los nombres de los componentes de la lista del archivo starter
 ```{r eval=F}
-matrix(names(start),ncol=1) 
+# matrix(names(start),ncol=1) 
 ```
 
 ```{r}
