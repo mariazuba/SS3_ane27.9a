@@ -1,12 +1,22 @@
-#V3.30.12.00-safe;_2018_09_13;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.6
-#Stock Synthesis (SS) is a work of the U.S. Government and is not subject to copyright protection in the United States.
-#Foreign copyrights may apply. See copyright.txt for more information.
-Wed Aug 24 08:18:50 2022
+#V3.30.18.00;_safe;_compile_date:_Sep 30 2021;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_12.3
+#_Stock_Synthesis_is_a_work_of_the_U.S._Government_and_is_not_subject_to_copyright_protection_in_the_United_States.
+#_Foreign_copyrights_may_apply._See_copyright.txt_for_more_information.
+#_User_support_available_at:NMFS.Stock.Synthesis@noaa.gov
+#_User_info_available_at:https://vlab.noaa.gov/group/stock-synthesis
+#_Source_code_at:_https://github.com/nmfs-stock-synthesis/stock-synthesis
 
-You have just one settlement event; recommend changing to recr_dist_method 4 which takes no parameters
-settle_month is less than spawn_month, so logical age at settlement calculated to be: 1  for settle_time 1.  Does not match read value of 0 are you sure? 
- warning: poor convergence in Fmsy, final dy/dy2= -0.159574
- Fmsy is >3x of Fspr are you sure?  check for convergence 
- Fmsy is close to max allowed; check for convergence 
- N warnings: 5
-Number_of_active_parameters_on_or_near_bounds: 3
+This file contains warnings, suggestions and notes generated as files are read and processed
+
+1 NOTE: This model has just one settlement event. Changing to recr_dist_method 4 and removing the recruitment distribution parameters at the end of the MG parms section (below growth parameters) will produce identical results and simplify the model.
+2 settle_month is less than spawn_month, so logical age at settlement calculated to be: 1  for settle_time 1.  Does not match read value of 0 are you sure? 
+3 parameter init value is greater than parameter max 3.1591 > 3 for parm: 8 ; search for <now check> echoinput for parm_type, will exit if prior requested
+4 setting in starter does not request all priors, and 1 parameters have priors and are not estimated, so their prior not included in obj_fun.
+5 warning: poor convergence in Fmsy, final dy/dy2= -0.158116
+6 Fmsy is >3x of Fspr are you sure?  check for convergence 
+7 Fmsy is close to max allowed; check for convergence 
+8 Forecast F capped by max possible F from control file: 4
+9 Final gradient: 2.87185 is larger than final_conv: 1e-05
+10 Forecast F capped by max possible F from control file: 4
+11 Forecast F capped by max possible F from control file: 4
+12  Number_of_active_parameters_on_or_near_bounds: 4
+N warnings: 12
