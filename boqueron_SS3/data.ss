@@ -1,5 +1,5 @@
 #V3.30
-#C data file for simple example
+#C 2022 Anchoveta Cadiz data file MODELO TRIMESTRAL
 #
 1989 #_styr
 2022 #_endyr
@@ -13,9 +13,9 @@
 3 #_Nfleets
 #_fleetinfo
 #_type	surveytiming	area	units	need_catch_mult	fleetname
-1	  -1	1	1	0	FLOTA   	#_1
-3	0.08	1	1	0	PELAGO  	#_2
-3	 0.4	1	1	0	ECOCADIZ	#_3
+1	  -1	1	2	0	FLOTA   	#_1
+3	0.08	1	2	0	PELAGO  	#_2
+3	 0.4	1	2	0	ECOCADIZ	#_3
 #_Catch data
 #_year	season	fleet	catch	catch_se
  -999	1	1	        0	0.01	#_1         
@@ -217,7 +217,7 @@
 #_population_length_bins
 2 # length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector
 0.5 # binwidth for population size comp
-3.5 # minimum size in the population (lower edge of first bin and size at age 0.00)
+0 # minimum size in the population (lower edge of first bin and size at age 0.00)
 21.5 # maximum size in the population (lower edge of last bin)
 1 #_use_lencomp
 #
@@ -402,9 +402,6 @@
 #
 #_MeanSize_at_Age_obs
 0 #_use_MeanSize_at_Age_obs
-#_Yr	Seas	FltSvy	Gender	Part	AgeErr	Ignore	#
-# -9999	0	0	0	0	0	0	0	#_1         
--9999  	0	0	0	0	0	0	0	#_terminator
 0 #_N_environ_variables
 0 #_N_sizefreq_methods
 0 #_do_tags
