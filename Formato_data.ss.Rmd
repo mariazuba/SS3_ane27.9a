@@ -917,7 +917,9 @@ dat1$use_selectivity_priors
 imprime línea final
 ```{r}
 dat1$eof<-TRUE 
-dat1$eo
+dat1$eof
+
+
 ```
 
 
