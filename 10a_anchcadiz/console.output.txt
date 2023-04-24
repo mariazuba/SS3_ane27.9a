@@ -1,6 +1,6 @@
 ###
 console output
-2023-04-19 15:18:54
+2023-04-22 10:28:47
 ###
  
  reading from STARTER.SS
@@ -2391,7 +2391,7 @@ finished benchmark, forecast, and sdreporting
 6 1092 -log(L): 51.6924  Spbio: 4288.14 475.597
 
 In final section 
-Finish time: Wed Apr 19 15:18:54 2023
+Finish time: Sat Apr 22 10:28:47 2023
 Elapsed time: 0 hours, 0 minutes, 32 seconds.
  Iterations: 1092 -log(L): 51.6924
 Final gradient: 2.87185
