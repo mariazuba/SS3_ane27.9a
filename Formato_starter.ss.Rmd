@@ -51,7 +51,8 @@ Tarea pendiente....
 ```{r}
 # por ahora tomare el archivo que ejecuta bien de boqueron como base, 
 # despues cambiarlo a modelo simple
-dirname.base <- here("10a_anchcadiz")
+#dirname.base <- here("10a_anchcadiz")
+dirname.base <- here("modelos_SS3","simple")
 ```
 
 #### Creamos un nuevo directorio para la nueva versión del modelo modificado 
@@ -121,7 +122,7 @@ start1$F_report_basis         <- 0
 start1$MCMC_output_detail     <- 0
 start1$ALK_tolerance          <- 0
 start1$final                  <- 3.3
-
+start1$seed                   <- -1
 ```
 
 ###  Escribir archivo de starter modificado con la función  `SS_write` para el enfoque de modelación `SS3`
