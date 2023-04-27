@@ -17,22 +17,6 @@ knitr::opts_chunk$set(echo=T, warning=FALSE, message=FALSE,collapse=TRUE,fig.ali
 ```
 
 
-# Descripción del repositorio
-
-- Directorio con archivos requeridos para ejecutar GADGET
-- Directorio con archivos requeridos para ejecutar SS3
-- Directorio con ejecutable SS3 para tres sistemas operativos (windows, linux y mac)
-- Códigos Rmarkdown (pdf o html) que permita modificar archivos SS3
-    - formato data.ss
-    - formato contro.ss
-    - formato starter.ss
-    - formato forecast.ss
-
-# Descargar archivos requeridos desde repositorio
-
-Tarea pendiente....
-
-# Librerias requeridas
 
 
 ```{r results='hide',include=FALSE}
