@@ -31,8 +31,10 @@
 #
 # setup for M, growth, maturity, fecundity, recruitment distibution, movement
 #
-0 #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate;_5=Maunder_M;_6=Age-range_Lorenzen
-#_no additional input for selected M option; read 1P per morph
+3 #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate
+#_ #_Age_natmort_by sex x growthpattern
+#_Age_0	Age_1	Age_2	Age_3
+2.21	1.3	1.3	1.3	#_natM1
 1 # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr;5=age_specific_K_each; 6=NA; 7=NA; 8=growth cessation
 0.1 #_Age(post-settlement)_for_L1;linear growth below this
 4 #_Growth_Age_for_L2 (999 to use as Linf)
@@ -49,22 +51,24 @@
 #
 #_growth_parms
 #_LO	HI	INIT	PRIOR	PR_SD	PR_type	PHASE	env_var&link	dev_link	dev_minyr	dev_maxyr	dev_PH	Block	Block_Fxn
- 0.05	     1.6	    0.7	-1.60944	0.1	0	 -4	0	0	0	0	0	0	0	#_NatM_p_1_Fem_GP_1  
-    0	      10	      6	      32	 99	0	  5	0	0	0	0	0	0	0	#_L_at_Amin_Fem_GP_1 
-    5	      22	     18	      50	 99	0	  5	0	0	0	0	0	0	0	#_L_at_Amax_Fem_GP_1 
-  0.1	       2	    0.5	     0.3	 99	0	  3	0	0	0	0	0	0	0	#_VonBert_K_Fem_GP_1 
- 0.03	    0.15	  0.066	     0.1	 99	0	  5	0	0	0	0	0	0	0	#_CV_young_Fem_GP_1  
- 0.03	    0.15	  0.066	     0.1	 99	0	  5	0	0	0	0	0	0	0	#_CV_old_Fem_GP_1    
-   -3	       3	0.00563	 0.00563	 99	0	-50	0	0	0	0	0	0	0	#_Wtlen_1_Fem_GP_1   
-   -3	       3	 3.1591	  3.1591	 99	0	-50	0	0	0	0	0	0	0	#_Wtlen_2_Fem_GP_1   
-   -3	       3	 3.1591	  3.1591	 99	0	-50	0	0	0	0	0	0	0	#_Mat50%_Fem_GP_1    
-   -3	       3	  -0.45	   -0.45	 99	0	-50	0	0	0	0	0	0	0	#_Mat_slope_Fem_GP_1 
-   -3	       3	      1	       1	 99	0	-50	0	0	0	0	0	0	0	#_Eggs_alpha_Fem_GP_1
-   -3	       3	      1	       1	 99	0	-50	0	0	0	0	0	0	0	#_Eggs_beta_Fem_GP_1 
-    0	       0	      0	       0	  0	0	 -4	0	0	0	0	0	0	0	#_RecrDist_month_1   
-  0.1	      10	      1	       1	  1	0	 -1	0	0	0	0	0	0	0	#_CohortGrowDev      
-1e-06	0.999999	    0.5	     0.5	0.5	0	-99	0	0	0	0	0	0	0	#_FracFemale_GP_1    
-#_no timevary MG parameters
+#    	#       	#         	#         	#  	#	#  	#	#	#	#	#	#	#	#_NatM_p_1_Fem_GP_1           
+0    	10      	6         	32        	99 	0	5  	0	0	0	0	0	0	0	#_L_at_Amin_Fem_GP_1          
+5    	22      	18.95     	19        	99 	0	5  	0	0	0	0	0	0	0	#_L_at_Amax_Fem_GP_1          
+0.1  	2       	0.89      	0.9       	99 	0	3  	0	0	0	0	0	0	0	#_VonBert_K_Fem_GP_1          
+0.03 	0.15    	0.066     	0.1       	99 	0	5  	0	0	0	0	0	0	0	#_CV_young_Fem_GP_1           
+0.03 	0.15    	0.066     	0.1       	99 	0	5  	0	0	0	0	0	0	0	#_CV_old_Fem_GP_1             
+-3   	3       	0.00312895	0.00312895	99 	0	-50	0	0	0	0	0	0	0	#_Wtlen_1_Fem_GP_1            
+-3   	3       	3.278     	3.278     	99 	0	-50	0	0	0	0	0	0	0	#_Wtlen_2_Fem_GP_1            
+50   	60      	55        	55        	0.8	0	-3 	0	0	0	0	0	0	0	#_Mat50%_Fem_GP_1             
+-3   	3       	-0.45     	-0.45     	99 	0	-50	0	0	0	0	0	0	0	#_Mat_slope_Fem_GP_1          
+-3   	3       	1         	1         	99 	0	-50	0	0	0	0	0	0	0	#_Eggs/kg_inter_Fem_GP_1      
+-3   	3       	1         	1         	99 	0	-50	0	0	0	0	0	0	0	#_Eggs/kg_slope_wt_Fem_GP_1   
+0    	0       	0         	0         	0  	0	-4 	0	0	0	0	0	0	0	#_RecrDist_month_1            
+1    	1       	1         	1         	99 	0	-1 	0	0	0	0	0	0	0	#_CohortGrowDev               
+1e-06	0.999999	0.5       	0.5       	0.5	0	-99	0	0	0	0	0	0	0	#_FracFemale_GP_1             
+0    	10      	1         	1         	99 	0	-3 	0	0	0	0	0	0	0	#_RecrDist_GP_1_area_1_month_1
+#_timevary MG parameters
+# info on dev vectors created for MGparms are reported with other devs after tag parameter section
 #
 #_seasonal_effects_on_biology_parms
 0 0 0 0 0 0 0 0 0 0 #_femwtlen1,femwtlen2,mat1,mat2,fec1,fec2,Malewtlen1,malewtlen2,L1,K
