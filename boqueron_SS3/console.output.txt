@@ -1,0 +1,7 @@
+###
+console output
+2023-04-22 10:28:01
+###
+ 
+ reading from STARTER.SS
+Error: ALK_tolerance must be between 0.0 and 0.1: 9

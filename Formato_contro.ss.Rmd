@@ -43,8 +43,13 @@ Tarea pendiente....
 
 ## Identificamos los directorio de trabajo
 ```{r}
+<<<<<<< HEAD
 dirname.base <- here("10a_anchcadiz")
 #dirname.base <- here("modelos_SS3","simple")
+=======
+#dirname.base <- here("10a_anchcadiz")
+dirname.base <- here("modelos_SS3","simple")
+>>>>>>> main
 
 ```
 
@@ -79,6 +84,7 @@ ctl1<-ctl # archivo modificado
 \newpage
 ##  Especificaciones iniciales
 ```{r}
+#--------------------------------------------------------------
 ctl1$nseas    <- 4
 ctl1$N_areas  <- 1
 ctl1$Nages    <- 4
@@ -86,14 +92,13 @@ ctl1$Nsexes   <- 1
 ctl1$Npopbins <- 44
 ctl1$Nfleets  <- 3
 ctl1$Do_AgeKey<- 0
-```
-
-
-## Datos de los archivos
-```{r}
 ctl1$fleetnames <- c("Fishery","PELAGO","ECOCADIZ")
 ctl1$Comments<-"#C 2023 Boqueron Cádiz control file MODELO TRIMESTRAL"
 ctl1$eof        <- TRUE
+#--------------------------------------------------------------
+# revisa salidas
+ctl1[1:14]
+#--------------------------------------------------------------
 ```
 
 
@@ -101,6 +106,7 @@ ctl1$eof        <- TRUE
 
 Opciones y especificaciones: 
 
+<<<<<<< HEAD
 - EmpiricalWAA = 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters
 - N_GP = N_Growth_Patterns (Growth Patterns, Morphs,  Bio Patterns, GP are terms used interchangeably in SS3)
 - N_platoon = N_platoons_Within_GrowthPattern 
@@ -109,12 +115,28 @@ Opciones y especificaciones:
 ctl1$EmpiricalWAA <- 0
 ctl1$N_GP         <- 1
 ctl1$N_platoon    <- 1
+=======
+- `EmpiricalWAA` = 0 means do not read wtatage.ss; 1 means read and use wtatage.ss and also read and use growth parameters
+- `N_GP` = N_Growth_Patterns (Growth Patterns, Morphs,  Bio Patterns, GP are terms used interchangeably in SS3)
+- `N_platoon` = N_platoons_Within_GrowthPattern 
+
+```{r}
+#--------------------------------------------------------------
+ctl1$EmpiricalWAA <- 0
+ctl1$N_GP         <- 1
+ctl1$N_platoon    <- 1
+#--------------------------------------------------------------
+# revisa salidas
+ctl1[15:17]
+#--------------------------------------------------------------
+>>>>>>> main
 ```
 
 ## Distribución del reclutamiento
 
 Opciones y especificaciones: 
 
+<<<<<<< HEAD
 - recr_dist_method  = 2=main effects for GP, Area, Settle timing; 3=each Settle entity; 4=none (only when N_GP*Nsettle*pop==1)
 - recr_global_area  = 1=global; 2=by area
 - recr_dist_read    = number of recruitment settlement assignments 
@@ -122,10 +144,30 @@ Opciones y especificaciones:
 - recr_dist_pattern = Matriz que contiene la siguiente información: GPattern, month,  area,  age (for each settlement assignment)
 
 ```{r}
+=======
+- `recr_dist_method`  = 2=main effects for GP, Area, Settle timing; 3=each Settle entity; 4=none (only when N_GP*Nsettle*pop==1)
+- `recr_global_area`  = 1=global; 2=by area
+- `recr_dist_read`    = number of recruitment settlement assignments 
+- `recr_dist_inx`     = unused option
+
+
+`recr_dist_pattern` es una  Matriz que contiene la siguiente información:
+
+  - `GPattern`:
+  - `month`:
+  - `area`:
+  - `age`: 
+
+(for each settlement assignment)
+
+```{r}
+#--------------------------------------------------------------
+>>>>>>> main
 ctl1$recr_dist_method<-3
 ctl1$recr_global_area<-1
 ctl1$recr_dist_read  <-1
 ctl1$recr_dist_inx   <-0
+<<<<<<< HEAD
 #--------------------------------------------------------------
      rec_pattern<-data.frame(row.names="recr_dist_pattern1",
                              "GPattern" = 1,
@@ -148,12 +190,48 @@ Opciones y especificaciones:
 ctl1$N_Block_Designs    <- 1
 ctl1$blocks_per_pattern <- 1
 ctl1$Block_Design       <- c(1989,1989)
+=======
+
+ctl1[18:21]
+
+#--------------------------------------------------------------
+     rec_pattern<-data.frame(row.names="recr_dist_pattern1",
+                             "GPattern" = 1,
+                             "month"    = 1,
+                             "area"     = 1,
+                             "age"      = 0)
+ctl1$recr_dist_pattern<-rec_pattern
+#--------------------------------------------------------------
+# revisa salidas
+ctl1$recr_dist_pattern
+#--------------------------------------------------------------
+```
+
+## Bloques
+
+Opciones y especificaciones: 
+
+- `N_Block_Designs` =
+- `blocks_per_pattern` =
+- `Block_Design` =
+
+```{r}
+#--------------------------------------------------------------
+ctl1$N_Block_Designs    <- 1
+ctl1$blocks_per_pattern <- 1
+ctl1$Block_Design       <- c(1989,1989)
+#--------------------------------------------------------------
+# revisa salidas
+ctl1[23:25]
+#--------------------------------------------------------------
+>>>>>>> main
 ```
 
 
 ## Parámetros que varían en el tiempo 
 
 Opciones y especificaciones: 
+<<<<<<< HEAD
 
 - time_vary_adjust_method = controls for all timevary parameters. _time-vary parm bound check (1=warn relative to base parm bounds; 3=no bound check); Also see env (3) and dev (5) options to constrain with base bounds.
 - time_vary_auto_generation = Matriz que contiene la siguiente información: AUTOGEN, autogen:  1st element for biology, 2nd for SR, 3rd for Q, 4th reserved, 5th for selex where: 0 = autogen time-varying parms of this category; 1 = read each time-varying parm line; 2 = read then autogen if parm min==-12345.
@@ -168,6 +246,24 @@ time_auto<-data.frame(matrix(rep(1,5),nrow=1,ncol=5))
 colnames(time_auto)<-paste("time_vary_auto_generation_",seq(1,5,1),sep="")
 
 ctl1$time_vary_auto_generation<-time_auto
+=======
+
+- `time_vary_adjust_method` = controls for all timevary parameters. _time-vary parm bound check (1=warn relative to base parm bounds; 3=no bound check); Also see env (3) and dev (5) options to constrain with base bounds.
+- `time_vary_auto_generation` = Matriz que contiene la siguiente información: AUTOGEN, autogen:  1st element for biology, 2nd for SR, 3rd for Q, 4th reserved, 5th for selex where: 0 = autogen time-varying parms of this category; 1 = read each time-varying parm line; 2 = read then autogen if parm min==-12345.
+
+
+```{r}
+#--------------------------------------------------------------
+ctl1$time_vary_adjust_method <- 1
+ctl1$time_vary_adjust_method
+#--------------------------------------------------------------
+# arreglo de datos para "time_vary_auto_generation"
+time_auto<-data.frame(matrix(rep(1,5),nrow=1,ncol=5))
+colnames(time_auto)<-paste("time_vary_auto_generation_",seq(1,5,1),sep="")
+
+ctl1$time_vary_auto_generation<-time_auto
+ctl1$time_vary_auto_generation
+>>>>>>> main
 #--------------------------------------------------------------
 
 ```
@@ -194,6 +290,10 @@ Opciones y especificaciones:
 
 El siguiente código permite modificar las opciones antes especificadas:
 ```{r}
+<<<<<<< HEAD
+=======
+#--------------------------------------------------------------
+>>>>>>> main
 ctl1$natM_type          <- 0
 ctl1$GrowthModel        <- 1
 ctl1$Growth_Age_for_L1  <- 0.1
@@ -208,6 +308,13 @@ ctl1$First_Mature_Age   <- 1
 ctl1$fecundity_option   <- 1
 ctl1$hermaphroditism_option    <- 0
 ctl1$parameter_offset_approach <- 1
+<<<<<<< HEAD
+=======
+#--------------------------------------------------------------
+#revisa salidas
+ctl1[28:41]
+#--------------------------------------------------------------
+>>>>>>> main
 ```
 
 ### Parámetros biológicos
@@ -268,6 +375,8 @@ La definición de cada línea es la siguiente:
 - `Block_Fxn`= forma funcional para el desplazamiento de bloques 
 
 ##### Mortalidad natural Fem GP_1
+\quad
+
 ```{r}
 ##--------------------------------------------------------------
 MG_parms1<-data.frame(row.names="NatM_p_1_Fem_GP_1",
@@ -525,37 +634,87 @@ MG_parms15<-data.frame(row.names="FracFemale_GP_1",
                       "Block_Fxn"    = 0)
 ctl1$MG_parms[15,]<-MG_parms15
 ##--------------------------------------------------------------
+#elimino los parámetros que no se utilizaran en el modelo trimestral por el momento
+patron_eliminar<-rownames(ctl1$MG_parms)[grep("_Mal_",rownames(ctl1$MG_parms))] 
+ctl1$MG_parms <- subset(ctl1$MG_parms, !rownames(ctl1$MG_parms) %in% c(patron_eliminar,"RecrDist_GP_1","RecrDist_Area_1"))
 
-```
 
-
+<<<<<<< HEAD
 ##### seasonal_effects_on_biology_parms
 \quad
 ```{r}
 
 MGparm_seas_effects1<-data.frame(matrix(rep(0,10),nrow=1,ncol=10))
 colnames(MGparm_seas_effects1)<-paste("MGparm_seas_effects_",seq(1,10,1),sep="")
+=======
+# revisa salidas primeras columnas
+>>>>>>> main
 
-ctl1$MGparm_seas_effects<-MGparm_seas_effects1
 
+<<<<<<< HEAD
+=======
+ctl1$MG_parms[,1:6]
+##--------------------------------------------------------------
+>>>>>>> main
 ```
 
-\newpage
 
+<<<<<<< HEAD
+=======
+##### seasonal_effects_on_biology_parms
+\quad
+`MGparm_seas_effects`: 
+
+
+```{r}
+##--------------------------------------------------------------
+
+MGparm_seas_effects1<-data.frame(matrix(rep(0,10),nrow=1,ncol=10))
+colnames(MGparm_seas_effects1)<-paste("MGparm_seas_effects_",seq(1,10,1),sep="")
+
+ctl1$MGparm_seas_effects<-MGparm_seas_effects1
+##--------------------------------------------------------------
+# para revisar
+ctl1$MGparm_seas_effects
+##--------------------------------------------------------------
+```
+
+
+
+>>>>>>> main
 ## Relación stock recluta
 
 - `SR_function`: 1=NA;2=Ricker;3=std_B-H;4=SCAA;5=Hockey; 6=B-H_flattop; 7=survival_3Parm; 8=Shepherd_3Parm;  9=RickerPower_3parm
 - `Use_steep_init_equi`: 0/1 to use steepness in initial equ recruitment calculation
+<<<<<<< HEAD
 - `ctl1$Sigma_R_FofCurvature`: future feature: 0/1 to make realized sigmaR a function of SR curvature
+=======
+- `Sigma_R_FofCurvature`: future feature: 0/1 to make realized sigmaR a function of SR curvature
+>>>>>>> main
 
 ```{r}
+# Especificaciones iniciales
 ##--------------------------------------------------------------
+<<<<<<< HEAD
 ctl1$SR_function          <- 4 #SCAA
 ctl1$Use_steep_init_equi  <- 0
 ctl1$Sigma_R_FofCurvature <- 0
 ##--------------------------------------------------------------
 SR_parms1<-data.frame(row.names="SR_LN(R0)",
                       "LO"           = 5,
+=======
+
+ctl1$SR_function          <- 4 
+ctl1$Use_steep_init_equi  <- 0
+ctl1$Sigma_R_FofCurvature <- 0
+##--------------------------------------------------------------
+# revisar salidas
+ctl1[44:46]
+
+# Sección donde se ingresan los parámetros 
+##--------------------------------------------------------------
+SR_parms1<-data.frame("LO"           = 5,
+>>>>>>> main
                       "HI"           = 20,
                       "INIT"         = 13,
                       "PRIOR"        = 0,
@@ -570,9 +729,14 @@ SR_parms1<-data.frame(row.names="SR_LN(R0)",
                       "Block"        = 0,
                       "Block_Fxn"    = 0)
 ctl1$SR_parms[1,]<-SR_parms1
+rownames(ctl1$SR_parms)[1]<-"SR_LN(R0)"
 ##--------------------------------------------------------------
+<<<<<<< HEAD
 SR_parms2<-data.frame(row.names="SR_SCAA_null",
                       "LO"           = 0.2,
+=======
+SR_parms2<-data.frame("LO"           = 0.2,
+>>>>>>> main
                       "HI"           = 1,
                       "INIT"         = 0.88,
                       "PRIOR"        = 0.777,
@@ -586,10 +750,17 @@ SR_parms2<-data.frame(row.names="SR_SCAA_null",
                       "dev_PH"       = 0,
                       "Block"        = 0,
                       "Block_Fxn"    = 0)
+<<<<<<< HEAD
 ctl1$SR_parms[2,] <-SR_parms2
 ##--------------------------------------------------------------
 SR_parms3<-data.frame(row.names="SR_sigmaR",
                       "LO"           = 0.3,
+=======
+ctl1$SR_parms[2,] <-SR_parms2; 
+rownames(ctl1$SR_parms)[2]<-"SR_SCAA_null"
+##--------------------------------------------------------------
+SR_parms3<-data.frame("LO"           = 0.3,
+>>>>>>> main
                       "HI"           = 1.6,
                       "INIT"         = 0.6,
                       "PRIOR"        = 1.1,
@@ -604,9 +775,14 @@ SR_parms3<-data.frame(row.names="SR_sigmaR",
                       "Block"        = 0,
                       "Block_Fxn"    = 0)
 ctl1$SR_parms[3,] <-SR_parms3
+rownames(ctl1$SR_parms)[3]<-"SR_sigmaR"
 ##--------------------------------------------------------------
+<<<<<<< HEAD
 SR_parms4<-data.frame(row.names="SR_regime",
                       "LO"           = -5,
+=======
+SR_parms4<-data.frame("LO"           = -5,
+>>>>>>> main
                       "HI"           = 5,
                       "INIT"         = 0,
                       "PRIOR"        = 0,
@@ -621,9 +797,14 @@ SR_parms4<-data.frame(row.names="SR_regime",
                       "Block"        = 0,
                       "Block_Fxn"    = 0)
 ctl1$SR_parms[4,] <-SR_parms4
+rownames(ctl1$SR_parms)[4]<-"SR_regime"
 ##--------------------------------------------------------------
+<<<<<<< HEAD
 SR_parms5<-data.frame(row.names="SR_autocorr",
                       "LO"           = 0,
+=======
+SR_parms5<-data.frame("LO"           = 0,
+>>>>>>> main
                       "HI"           = 2,
                       "INIT"         = 0,
                       "PRIOR"        = 1,
@@ -638,8 +819,16 @@ SR_parms5<-data.frame(row.names="SR_autocorr",
                       "Block"        = 0,
                       "Block_Fxn"    = 0)
 ctl1$SR_parms[5,] <- SR_parms5
+<<<<<<< HEAD
 
 ctl1$SR_parms
+=======
+rownames(ctl1$SR_parms)[5]<-"SR_autocorr"
+##--------------------------------------------------------------
+# para revisar primeras columnas
+ctl1$SR_parms[,1:6]
+##--------------------------------------------------------------
+>>>>>>> main
 ```
 
 ## Desvíos de los reclutamientos y sesgo
@@ -665,6 +854,7 @@ ctl1$SR_parms
 - `N_Read_recdevs`:
 
 ```{r}
+<<<<<<< HEAD
 ctl1$do_recdev <- 1
 ctl1$MainRdevYrFirst <- 1989
 ctl1$MainRdevYrLast  <- 2021
@@ -673,12 +863,24 @@ ctl1$recdev_adv      <- 0
 ctl1$recdev_early_start <- NULL
 ctl1$recdev_early_phase <- NULL
 ctl1$Fcast_recr_phase   <- NULL
+=======
+##--------------------------------------------------------------
+ctl1$do_recdev <- 1
+ctl1$MainRdevYrFirst <- 1989
+ctl1$MainRdevYrLast  <- 2022
+ctl1$recdev_phase    <- 1
+ctl1$recdev_adv      <- 0
+ctl1$recdev_early_start       <- NULL
+ctl1$recdev_early_phase       <- NULL
+ctl1$Fcast_recr_phase         <- NULL
+>>>>>>> main
 ctl1$lambda4Fcast_recr_like   <- NULL
 ctl1$last_early_yr_nobias_adj <- NULL
 ctl1$first_yr_fullbias_adj    <- NULL
 ctl1$last_yr_fullbias_adj     <- NULL
 ctl1$first_recent_yr_nobias_adj <- NULL
 ctl1$max_bias_adj               <- NULL
+<<<<<<< HEAD
 ctl1$period_of_cycles_in_recr <- NULL
 ctl1$min_rec_dev    <- NULL
 ctl1$max_rec_dev    <- NULL
@@ -686,6 +888,18 @@ ctl1$N_Read_recdevs <- NULL
 ```
 
 
+=======
+ctl1$period_of_cycles_in_recr   <- NULL
+ctl1$min_rec_dev                <- NULL
+ctl1$max_rec_dev                <- NULL
+ctl1$N_Read_recdevs             <- NULL
+##--------------------------------------------------------------
+# revisar salidas
+ctl1[48:52]
+```
+
+
+>>>>>>> main
 ## Mortalidad por pesca
 
 - `F_ballpark`: F ballpark value in units of annual_F
@@ -703,6 +917,12 @@ ctl1$F_Method        <- 3
 ctl1$maxF            <- 4
 ctl1$F_iter          <- 3
 #--------------------------------------------------
+<<<<<<< HEAD
+=======
+# revisa salidas
+ctl1[53:57]
+#--------------------------------------------------
+>>>>>>> main
 ```
 
 
@@ -719,32 +939,54 @@ ctl1$F_iter          <- 3
 
 ```{r}
 #---------------------------------------------
+<<<<<<< HEAD
 Q_options1<-data.frame(row.names="PELAGO",
                        "fleet"     = 2,
+=======
+Q_options1<-data.frame("fleet"     = 2,
+>>>>>>> main
                        "link"      = 1,
                        "link_info" = 0,
                        "extra_se"  = 0,
                        "biasadj"   = 0,
                        "float"     = 0) 
 ctl1$Q_options[1,]<-Q_options1
+<<<<<<< HEAD
 #---------------------------------------------
 Q_options2<-data.frame(row.names="ECOCADIZ",
                        "fleet"     = 3,
+=======
+rownames(ctl1$Q_options)[1]<-"PELAGO"
+#---------------------------------------------
+Q_options2<-data.frame("fleet"     = 3,
+>>>>>>> main
                        "link"      = 1,
                        "link_info" = 0,
                        "extra_se"  = 0,
                        "biasadj"   = 0,
                        "float"     = 0) 
 ctl1$Q_options[2,]<-Q_options2
+<<<<<<< HEAD
 #---------------------------------------------
+=======
+rownames(ctl1$Q_options)[2]<-"ECOCADIZ"
+#---------------------------------------------
+#revisa salidas
+ctl1$Q_options
+
+>>>>>>> main
 ```
 
 ### Parámetros
 \quad
 ```{r}
 #--------------------------------------------------
+<<<<<<< HEAD
 Q_parms1<-data.frame(row.names="LnQ_base_PELAGO(2)",
                       "LO"           = -30,
+=======
+Q_parms1<-data.frame("LO"           = -30,
+>>>>>>> main
                       "HI"           = 15,
                       "INIT"         = -0.158817,
                       "PRIOR"        = 0,
@@ -759,9 +1001,9 @@ Q_parms1<-data.frame(row.names="LnQ_base_PELAGO(2)",
                       "Block"        = 0,
                       "Block_Fxn"    = 0)
 ctl1$Q_parms[1,]<-Q_parms1
+rownames(ctl1$Q_parms)[1]<-"LnQ_base_PELAGO(2)"
 #--------------------------------------------------
-Q_parms2<-data.frame(row.names="LnQ_base_ECOCADIZ(3)",
-                      "LO"           = -30,
+Q_parms2<-data.frame( "LO"           = -30,
                       "HI"           = 15,
                       "INIT"         = 0.08918,
                       "PRIOR"        = 0,
@@ -776,7 +1018,13 @@ Q_parms2<-data.frame(row.names="LnQ_base_ECOCADIZ(3)",
                       "Block"        = 0,
                       "Block_Fxn"    = 0)
 ctl1$Q_parms[2,]<-Q_parms2
+rownames(ctl1$Q_parms)[2]<-"LnQ_base_ECOCADIZ(3)"
 #--------------------------------------------------
+#elimino survey 3 del modelo base
+ctl1$Q_parms <- subset(ctl1$Q_parms, !rownames(ctl1$Q_parms) %in% c("LnQ_base_SURVEY2(3)"))
+#revisa salidas
+ctl1$Q_parms
+
 ```
 
 
@@ -806,28 +1054,34 @@ ctl1$Q_parms[2,]<-Q_parms2
 
 ```{r}
 #--------------------------------------------------
+<<<<<<< HEAD
 size_selex_types1<-data.frame(row.names="Fishery",
                               "Pattern" = 1,
+=======
+size_selex_types1<-data.frame("Pattern" = 1,
+>>>>>>> main
                               "Discard" = 0,
                               "Male"    = 0,
                               "Special" = 0)
 ctl1$size_selex_types[1,]<-size_selex_types1
+rownames(ctl1$size_selex_types)[1]<-"Fishery"
 #--------------------------------------------------
-size_selex_types2<-data.frame(row.names="PELAGO",
-                              "Pattern" = 1,
+size_selex_types2<-data.frame("Pattern" = 1,
                               "Discard" = 0,
                               "Male"    = 0,
                               "Special" = 0)
 ctl1$size_selex_types[2,]<-size_selex_types2
+rownames(ctl1$size_selex_types)[2]<-"PELAGO"
 #--------------------------------------------------
-size_selex_types3<-data.frame(row.names="ECOCADIZ",
-                              "Pattern" = 1,
+size_selex_types3<-data.frame("Pattern" = 1,
                               "Discard" = 0,
                               "Male"    = 0,
                               "Special" = 0)
 ctl1$size_selex_types[3,]<-size_selex_types3
+rownames(ctl1$size_selex_types)[3]<-"ECOCADIZ"
 #--------------------------------------------------
-
+#revisa salidas
+ctl1$size_selex_types
 ```
 
 ### tipos de selectividad a la edad
@@ -853,33 +1107,45 @@ ctl1$size_selex_types[3,]<-size_selex_types3
 
 ```{r}
 #--------------------------------------------------
+<<<<<<< HEAD
 age_selex_types1<-data.frame(row.names="Fishery",
                               Pattern = 12,
+=======
+age_selex_types1<-data.frame(Pattern = 12,
+>>>>>>> main
                               Discard = 0,
                               Male    = 0,
                               Special = 0)
 ctl1$age_selex_types[1,]<-age_selex_types1
+rownames(ctl1$age_selex_types)[1]<-"Fishery"
 #--------------------------------------------------
-age_selex_types2<-data.frame(row.names="PELAGO",
-                              Pattern = 12,
+age_selex_types2<-data.frame(Pattern = 12,
                               Discard = 0,
                               Male    = 0,
                               Special = 0)
 ctl1$age_selex_types[2,]<-age_selex_types2
+rownames(ctl1$age_selex_types)[2]<-"PELAGO"
 #--------------------------------------------------
-age_selex_types3<-data.frame(row.names="ECOCADIZ",
-                              Pattern = 12,
+age_selex_types3<-data.frame(Pattern = 12,
                               Discard = 0,
                               Male    = 0,
                               Special = 0)
 ctl1$age_selex_types[3,]<-age_selex_types3
+<<<<<<< HEAD
 #--------------------------------------------------
+=======
+rownames(ctl1$age_selex_types)[3]<-"ECOCADIZ"
+#--------------------------------------------------
+#revisa salidas
+ctl1$age_selex_types
+>>>>>>> main
 ```
 
 ### parametros de selectividad a la talla
 
 ```{r}
 #--------------------------------------------------
+<<<<<<< HEAD
 size_selex_parms1<-data.frame(row.names="SizeSel_P_1_Fishery(1)",
                       "LO"           = -1,
                       "HI"           = 20,
@@ -982,11 +1248,119 @@ size_selex_parms6<-data.frame(row.names="SizeSel_P_2_ECOCADIZ(3)",
                       "Block_Fxn"    = 0)
 ctl1$size_selex_parms[6,]<-size_selex_parms6
 #--------------------------------------------------
+=======
+size_selex_parms1<-data.frame("LO"           = -1,
+                              "HI"           = 20,
+                              "INIT"         = 12,
+                              "PRIOR"        = 0,
+                              "PR_SD"        = 0,
+                              "PR_type"      = 0,
+                              "PHASE"        = 2,
+                              "env_var&link" = 0,
+                              "dev_link"     = 0,
+                              "dev_minyr"    = 0,
+                              "dev_maxyr"    = 0,
+                              "dev_PH"       = 0.5,
+                              "Block"        = 0,
+                              "Block_Fxn"    = 0)
+ctl1$size_selex_parms[1,]<-size_selex_parms1
+rownames(ctl1$size_selex_parms)[1]<-"SizeSel_P_1_Fishery(1)"
+#--------------------------------------------------
+size_selex_parms2<-data.frame("LO"           = -1,
+                              "HI"           = 20,
+                              "INIT"         = 18,
+                              "PRIOR"        = 0,
+                              "PR_SD"        = 0,
+                              "PR_type"      = 0,
+                              "PHASE"        = 2,
+                              "env_var&link" = 0,
+                              "dev_link"     = 0,
+                              "dev_minyr"    = 0,
+                              "dev_maxyr"    = 0,
+                              "dev_PH"       = 0.5,
+                              "Block"        = 0,
+                              "Block_Fxn"    = 0)
+ctl1$size_selex_parms[2,]<-size_selex_parms2
+rownames(ctl1$size_selex_parms)[2]<-"SizeSel_P_2_Fishery(1)"
+#--------------------------------------------------
+size_selex_parms3<-data.frame("LO"           = -3,
+                              "HI"           = 8,
+                              "INIT"         = 6,
+                              "PRIOR"        = 0,
+                              "PR_SD"        = 0,
+                              "PR_type"      = 0,
+                              "PHASE"        = 3,
+                              "env_var&link" = 0,
+                              "dev_link"     = 0,
+                              "dev_minyr"    = 0,
+                              "dev_maxyr"    = 0,
+                              "dev_PH"       = 0.5,
+                              "Block"        = 0,
+                              "Block_Fxn"    = 0)
+ctl1$size_selex_parms[3,]<-size_selex_parms3
+rownames(ctl1$size_selex_parms)[3]<-"SizeSel_P_1_PELAGO(2)"
+#--------------------------------------------------
+size_selex_parms4<-data.frame("LO"           = -3,
+                              "HI"           = 16,
+                              "INIT"         = 10,
+                              "PRIOR"        = 0,
+                              "PR_SD"        = 0,
+                              "PR_type"      = 0,
+                              "PHASE"        = 3,
+                              "env_var&link" = 0,
+                              "dev_link"     = 0,
+                              "dev_minyr"    = 0,
+                              "dev_maxyr"    = 0,
+                              "dev_PH"       = 0.5,
+                              "Block"        = 0,
+                              "Block_Fxn"    = 0)
+ctl1$size_selex_parms[4,]<-size_selex_parms4
+rownames(ctl1$size_selex_parms)[4]<-"SizeSel_P_2_PELAGO(2)"
+#--------------------------------------------------
+size_selex_parms5<-data.frame("LO"           = -1,
+                              "HI"           = 10,
+                              "INIT"         = 8,
+                              "PRIOR"        = 0,
+                              "PR_SD"        = 0,
+                              "PR_type"      = 0,
+                              "PHASE"        = 3,
+                              "env_var&link" = 0,
+                              "dev_link"     = 0,
+                              "dev_minyr"    = 0,
+                              "dev_maxyr"    = 0,
+                              "dev_PH"       = 0.5,
+                              "Block"        = 0,
+                              "Block_Fxn"    = 0)
+ctl1$size_selex_parms[5,]<-size_selex_parms5
+rownames(ctl1$size_selex_parms)[5]<-"SizeSel_P_1_ECOCADIZ(3)"
+#--------------------------------------------------
+size_selex_parms6<-data.frame("LO"           = -1,
+                              "HI"           = 20.5,
+                              "INIT"         = 15,
+                              "PRIOR"        = 0,
+                              "PR_SD"        = 0,
+                              "PR_type"      = 0,
+                              "PHASE"        = 3,
+                              "env_var&link" = 0,
+                              "dev_link"     = 0,
+                              "dev_minyr"    = 0,
+                              "dev_maxyr"    = 0,
+                              "dev_PH"       = 0.5,
+                              "Block"        = 0,
+                              "Block_Fxn"    = 0)
+ctl1$size_selex_parms[6,]<-size_selex_parms6
+rownames(ctl1$size_selex_parms)[6]<-"SizeSel_P_2_ECOCADIZ(3)"
+#--------------------------------------------------
+# revisa salidas
+ctl1$size_selex_parms
+
+>>>>>>> main
 ```
 
 ### parametros de selectividad a la edad
 \quad
 ```{r}
+<<<<<<< HEAD
 #--------------------------------------------------
 age_selex_parms1<-data.frame(row.names="AgeSel_P_1_Fishery(1)",
                       "LO"            = -2.0,
@@ -1054,10 +1428,82 @@ age_selex_parms4<-data.frame(row.names="AgeSel_P_2_PELAGO(2)",
                       "dev_PH"        = 0.5,
                       "Block"         = 0,
                       "Block_Fxn"     = 0)
-ctl1$age_selex_parms[4,]<-age_selex_parms4
+=======
+age_selex_parms1<-data.frame("LO"            = -2.0,
+                             "HI"            = 5.50,
+                             "INIT"          = 0.10,
+                             "PRIOR"         = 0,
+                             "PR_SD"         = 0.01,
+                             "PR_type"       = 0,
+                             "PHASE"         = -1,
+                             "env_var&link"  = 0,
+                             "dev_link"      = 0,
+                             "dev_minyr"     = 0,
+                             "dev_maxyr"     = 0,
+                             "dev_PH"        = 0.5,
+                             "Block"         = 0,
+                             "Block_Fxn"     = 0)
+ctl1$age_selex_parms[1,]<-age_selex_parms1
+rownames(ctl1$age_selex_parms)[1]<-"AgeSel_P_1_Fishery(1)"
 #--------------------------------------------------
+age_selex_parms2<-data.frame("LO"            = -1.0,
+                             "HI"            = 5.50,
+                             "INIT"          = 5.0,
+                             "PRIOR"         = 0,
+                             "PR_SD"         = 0.01,
+                             "PR_type"       = 0,
+                             "PHASE"         = -1,
+                             "env_var&link"  = 0,
+                             "dev_link"      = 0,
+                             "dev_minyr"     = 0,
+                             "dev_maxyr"     = 0,
+                             "dev_PH"        = 0.5,
+                             "Block"         = 0,
+                             "Block_Fxn"     = 0)
+ctl1$age_selex_parms[2,]<-age_selex_parms2
+rownames(ctl1$age_selex_parms)[2]<-"AgeSel_P_2_Fishery(1)"
+#--------------------------------------------------
+age_selex_parms3<-data.frame("LO"            = -2.0,
+                             "HI"            = 5.50,
+                             "INIT"          = 0.10,
+                             "PRIOR"         = 0,
+                             "PR_SD"         = 0.01,
+                             "PR_type"       = 0,
+                             "PHASE"         = -1,
+                             "env_var&link"  = 0,
+                             "dev_link"      = 0,
+                             "dev_minyr"     = 0,
+                             "dev_maxyr"     = 0,
+                             "dev_PH"        = 0.5,
+                             "Block"         = 0,
+                             "Block_Fxn"     = 0)
+ctl1$age_selex_parms[3,]<-age_selex_parms3
+rownames(ctl1$age_selex_parms)[3]<-"AgeSel_P_1_PELAGO(2)"
+#--------------------------------------------------
+age_selex_parms4<-data.frame("LO"            = -1.0,
+                             "HI"            = 5.50,
+                             "INIT"          = 5.00,
+                             "PRIOR"         = 0,
+                             "PR_SD"         = 0.01,
+                             "PR_type"       = 0,
+                             "PHASE"         = -1,
+                             "env_var&link"  = 0,
+                             "dev_link"      = 0,
+                             "dev_minyr"     = 0,
+                             "dev_maxyr"     = 0,
+                             "dev_PH"        = 0.5,
+                             "Block"         = 0,
+                             "Block_Fxn"     = 0)
+>>>>>>> main
+ctl1$age_selex_parms[4,]<-age_selex_parms4
+rownames(ctl1$age_selex_parms)[4]<-"AgeSel_P_2_PELAGO(2)"
+#--------------------------------------------------
+<<<<<<< HEAD
 age_selex_parms5<-data.frame(row.names="AgeSel_P_1_ECOCADIZ(3)",
                       "LO"            = -2.0,
+=======
+age_selex_parms5<-data.frame("LO"            = -2.0,
+>>>>>>> main
                       "HI"            = 5.50,
                       "INIT"          = 0.10,
                       "PRIOR"         = 0,
@@ -1072,9 +1518,14 @@ age_selex_parms5<-data.frame(row.names="AgeSel_P_1_ECOCADIZ(3)",
                       "Block"         = 0,
                       "Block_Fxn"     = 0)
 ctl1$age_selex_parms[5,]<-age_selex_parms5
+rownames(ctl1$age_selex_parms)[5]<-"AgeSel_P_1_ECOCADIZ(3)"
 #--------------------------------------------------
+<<<<<<< HEAD
 age_selex_parms6<-data.frame(row.names="AgeSel_P_2_ECOCADIZ(3)",
                       "LO"            = -1.0,
+=======
+age_selex_parms6<-data.frame("LO"            = -1.0,
+>>>>>>> main
                       "HI"            = 5.50,
                       "INIT"          = 5.00,
                       "PRIOR"         = 0,
@@ -1089,7 +1540,15 @@ age_selex_parms6<-data.frame(row.names="AgeSel_P_2_ECOCADIZ(3)",
                       "Block"         = 0,
                       "Block_Fxn"     = 0)
 ctl1$age_selex_parms[6,]<-age_selex_parms6
+<<<<<<< HEAD
 #--------------------------------------------------
+=======
+rownames(ctl1$age_selex_parms)[6]<-"AgeSel_P_2_ECOCADIZ(3)"
+#--------------------------------------------------
+# revisa salidas
+ctl1$age_selex_parms
+
+>>>>>>> main
 ```
 
 
@@ -1115,6 +1574,7 @@ ctl1$age_selex_parms[6,]<-age_selex_parms6
 
 ```{r }
 #--------------------------------------------------
+<<<<<<< HEAD
 ctl1$Use_2D_AR1_selectivity<-0
 ctl1$TG_custom<-0
 ctl1$DoVar_adjust<-1
@@ -1136,6 +1596,31 @@ varadj3<-data.frame(row.names="Variance_adjustment_list3",
                       "Fleet"   = 3,
                       "Value"   = 0.0047)
 ctl1$Variance_adjustment_list[1,]<-varadj3
+=======
+ctl1$Use_2D_AR1_selectivity <-0
+ctl1$TG_custom              <-0
+ctl1$DoVar_adjust           <-1
+# revisa salidas
+ctl1[64:66]
+
+
+#--------------------------------------------------
+varadj0 <- list()
+varadj1<-data.frame(row.names=c("Variance_adjustment_list1",
+                                "Variance_adjustment_list2",
+                                "Variance_adjustment_list3"),
+                      "Factor"  = c(4,4,4),
+                      "Fleet"   = c(1,2,3),
+                      "Value"   = c(0.0045,0.0051,0.0047))
+varadj0[[1]] <- varadj1
+names(varadj0)<-"Variance_adjustment_list"
+
+ctl1 <- append(ctl1, varadj0, after = 66)
+
+ctl1$Variance_adjustment_list
+
+ctl1[67]
+>>>>>>> main
 #--------------------------------------------------
 ctl1$maxlambdaphase          <- 1
 ctl1$sd_offset               <- 1
@@ -1147,6 +1632,10 @@ ctl1$stddev_reporting_selex  <- NULL
 ctl1$stddev_reporting_growth <- NULL
 ctl1$stddev_reporting_N_at_A <- NULL
 #--------------------------------------------------
+<<<<<<< HEAD
+=======
+ctl1[68:71]
+>>>>>>> main
 ```
 
 

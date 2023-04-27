@@ -43,8 +43,8 @@ Tarea pendiente....
 
 ## Identificamos los directorio de trabajo
 ```{r}
-
-dirname_base <- here("10a_anchcadiz")
+dirname_base <- here("modelos_SS3","simple")
+#dirname_base <- here("10a_anchcadiz")
 dirname_mod <- here("boqueron_SS3")
 ```
 
@@ -69,140 +69,92 @@ names(inputs)
 
 ```{r}
 names(fore) 
+
+
 ```
 
+Los primeros 4 elementos de la lista no son considerados para cambiar:
 
+- `warnings`
+- `SSversion`
+- `sourcefile`
+- `type`
+
+Desde benchmarks comenzamos a cambiar las opciones o valores específicos para el recurso evaluado:
+
+## Puntos de referencia asociados a la Biomasa y mortalidad por pesca
+- `benchmarks`: elegir una de estas  opciones, 0=skip; 1=calc F_spr,F_btgt,F_msy 
+- `MSY`: elegir una de estas opciones, 1= set to F(SPR); 2=calc F(MSY); 3=set to F(Btgt); 4=set to F(endyr) 
+- `SPRtarget`: escribir un valor de 0 a 1, por ejemplo, e.g. 0.40
+- `Btarget`: escribir un valor de 0 a 1, por ejemplo, e.g. 0.40 
+- `Bmark_years`: beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, end_recr_dist, beg_SRparm, end_SRparm (enter actual year, or values of 0 or -integer to be rel. endyr)
+- `Bmark_relF_Basis`: 1 = use year range;  2 = set relF same as forecast below
+- `Forecast`: 0=none; 1=F(SPR); 2=F(MSY) 3=F(Btgt); 4=Ave F (uses first-last relF yrs); 5=input annual F scalar
+- `Nforecastyrs`:
+- `F_scalar`: F scalar (only used for Do_Forecast==5)
+- `Fcast_years`: beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits (enter actual year, or values of 0 or -integer to be rel. endyr)
+- `Fcast_selex`: Forecast selectivity (0=fcast selex is mean from year range; 1=fcast selectivity from annual time-vary parms)
+- `ControlRuleMethod`: Control rule method (1=catch=f(SSB) west coast;  2=F=f(SSB) ) 
+- `BforconstantF`: Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) 
+- `BfornoF`: Control rule Biomass level for no F  (as frac of Bzero, e.g. 0.10) 
+- `Flimitfraction`: Control rule target as fraction of Flimit (e.g. 0.75) 
+- `N_forecast_loops`: 1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)
+- `First_forecast_loop_with_stochastic_recruitment`: First forecast loop with stochastic recruitment
+- `fcast_rec_option`: Forecast loop control #3 (reserved for future bells&whistles) 
+- `fcast_rec_val`: Forecast loop control #4 (reserved for future bells&whistles) 
+- `Forecast_loop_control_5`: Forecast loop control #5 (reserved for future bells&whistles) 
+- `FirstYear_for_caps_and_allocations`: FirstYear for caps and allocations (should be after years with fixed inputs) 
+- `stddev_of_log_catch_ratio`: stddev of log(realized catch/target catch) in forecast (set value>0.0 to cause active impl_error)
+- `Do_West_Coast_gfish_rebuilder_output`: Do West Coast gfish rebuilder output (0/1) 
+- `Ydecl`: Rebuilder: first year catch could have been set to zero (Ydecl)(-1 to set to 1999)
+- `Yinit`: Rebuilder: year for current age structure (Yinit) (-1 to set to endyear+1)
+- `fleet_relative_F`: fleet relative F:  1=use first-last alloc year; 2=read seas, fleet, alloc list below
+
+Note that fleet allocation is used directly as average F if Do_Forecast=4 basis for fcast catch tuning and for fcast catch caps and allocation
+
+- `basis_for_fcast_catch_tuning`: 2=deadbio;  3=retainbio;  5=deadnum; 6=retainnum
 ```{r}
 
-# fore1$warnings # no se cambia
-# fore1$SSversion # no se cambia
-# fore1$sourcefile # no se cambia
-# fore1$type # no se cambia
+fore1$warnings # no se cambia
+fore1$SSversion # no se cambia
+fore1$sourcefile # no se cambia
+fore1$type # no se cambia
 
 #---------------------------------------------------------------------------------------
-# Benchmarks: 
- # 0=skip; 
- # 1=calc F_spr,F_btgt,F_msy 
 fore1$benchmarks <- 1
+fore1$MSY        <- 2
+fore1$SPRtarget  <- 0.6
+fore1$Btarget    <- 0.55
 #---------------------------------------------------------------------------------------
-# MSY: 
-  # 1= set to F(SPR); 
-  # 2=calc F(MSY); 
-  # 3=set to F(Btgt); 
-  # 4=set to F(endyr) 
-fore1$MSY <- 2
-#---------------------------------------------------------------------------------------
-# SPR target (e.g. 0.40)
-fore1$SPRtarget <- 0.6
-#---------------------------------------------------------------------------------------
-# Biomass target (e.g. 0.40)
-fore1$Btarget<-0.55
-#---------------------------------------------------------------------------------------
-#_Bmark_years: 
-            #  beg_bio, end_bio, beg_selex, end_selex, beg_relF, end_relF, beg_recr_dist, 
-            #  end_recr_dist, beg_SRparm, end_SRparm (enter actual year, 
-            #  or values of 0 or -integer to be rel. endyr)
-
 Bmark_years1<-data.frame(matrix(rep(0,10),nrow=1,ncol=10))
 colnames(Bmark_years1)<-paste("#_Bmark_years_",seq(1,10,1),sep="")
-
-fore1$Bmark_years<-Bmark_years1
+fore1$Bmark_years      <- Bmark_years1
 #---------------------------------------------------------------------------------------
-#Bmark_relF_Basis: 
-  # 1 = use year range; 
-  # 2 = set relF same as forecast below
-fore1$Bmark_relF_Basis<-1
+fore1$Bmark_relF_Basis <-1
+fore1$Forecast         <-2
+fore1$Nforecastyrs     <-1
+fore1$F_scalar         <-1
 #---------------------------------------------------------------------------------------
-# Forecast: 
-  # 0=none; 
-  # 1=F(SPR); 
-  # 2=F(MSY) 
-  # 3=F(Btgt); 
-  # 4=Ave F (uses first-last relF yrs); 
-  # 5=input annual F scalar
-fore1$Forecast<-2
-#---------------------------------------------------------------------------------------
-# N forecast years 
-fore1$Nforecastyrs<-1
-#---------------------------------------------------------------------------------------
-# F scalar (only used for Do_Forecast==5)
-fore1$F_scalar<-1
-#---------------------------------------------------------------------------------------
-#_Fcast_years:  
-#            beg_selex, end_selex, beg_relF, end_relF, beg_recruits, end_recruits  
-#            (enter actual year, or values of 0 or -integer to be rel. endyr)
 Fcast_years1<-data.frame(matrix(c(-5,0,-5,0,-999,0),nrow=1,ncol=6))
 colnames(Fcast_years1)<-paste("#_Fcast_years_",seq(1,6,1),sep="")
-
-fore1$Fcast_years<-Fcast_years1
+fore1$Fcast_years       <-Fcast_years1
 #---------------------------------------------------------------------------------------
-# Forecast selectivity 
-  # (0=fcast selex is mean from year range; 
-  #  1=fcast selectivity from annual time-vary parms)
-fore1$Fcast_selex<-0
-#---------------------------------------------------------------------------------------
-# Control rule method 
-   # (1=catch=f(SSB) west coast; 
-   # 2=F=f(SSB) ) 
-fore1$ControlRuleMethod<-1
-#---------------------------------------------------------------------------------------
-# Control rule Biomass level for constant F 
-# (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) 
-fore1$BforconstantF<-0.6
-#---------------------------------------------------------------------------------------
-# Control rule Biomass level for no F 
-# (as frac of Bzero, e.g. 0.10) 
-fore1$BfornoF<-0.55
-#---------------------------------------------------------------------------------------
-# Control rule target as fraction of Flimit (e.g. 0.75) 
-fore1$Flimitfraction<-1
-#---------------------------------------------------------------------------------------
-#_N forecast loops 
-  # (1=OFL only; 
-  #  2=ABC; 
-  #  3=get F from forecast ABC catch with allocations applied)
-fore1$N_forecast_loops<-2
-#---------------------------------------------------------------------------------------
-#_First forecast loop with stochastic recruitment
+fore1$Fcast_selex       <-0
+fore1$ControlRuleMethod <-1
+fore1$BforconstantF     <-0.6
+fore1$BfornoF           <-0.55
+fore1$Flimitfraction    <-1
+fore1$N_forecast_loops  <-2
 fore1$First_forecast_loop_with_stochastic_recruitment<-3
-#---------------------------------------------------------------------------------------
-#_Forecast loop control #3 (reserved for future bells&whistles) 
-fore1$fcast_rec_option<- -1
-#---------------------------------------------------------------------------------------
-#_Forecast loop control #4 (reserved for future bells&whistles) 
-fore1$fcast_rec_val<-0
-#---------------------------------------------------------------------------------------
-#_Forecast loop control #5 (reserved for future bells&whistles) 
+fore1$fcast_rec_option  <- -1
+fore1$fcast_rec_val     <-0
 fore1$Forecast_loop_control_5<-0
-#---------------------------------------------------------------------------------------
-#FirstYear for caps and allocations (should be after years with fixed inputs) 
-fore1$FirstYear_for_caps_and_allocations<-2022
-#---------------------------------------------------------------------------------------
-# stddev of log(realized catch/target catch) in forecast 
-# (set value>0.0 to cause active impl_error)
+fore1$FirstYear_for_caps_and_allocations<-2023
 fore1$stddev_of_log_catch_ratio<-0
-#---------------------------------------------------------------------------------------
-# Do West Coast gfish rebuilder output (0/1) 
 fore1$Do_West_Coast_gfish_rebuilder_output<-0
-#---------------------------------------------------------------------------------------
-# Rebuilder:  
-#           first year catch could have been set to zero (Ydecl)(-1 to set to 1999)
 fore1$Ydecl<-1989
-#---------------------------------------------------------------------------------------
-# Rebuilder:  
-#           year for current age structure (Yinit) (-1 to set to endyear+1)
-fore1$Yinit<-2019
-#---------------------------------------------------------------------------------------
-# fleet relative F:  1=use first-last alloc year; 2=read seas, fleet, alloc list below
+fore1$Yinit<-2022
 fore1$fleet_relative_F<-1
-#---------------------------------------------------------------------------------------
-# Note that fleet allocation is used directly as average F if Do_Forecast=4 
-#
-# basis for fcast catch tuning and for fcast catch caps and allocation  
-  # (2=deadbio; 
-  # 3=retainbio; 
-  # 5=deadnum;
-  # 6=retainnum)
 fore1$basis_for_fcast_catch_tuning<-2
 #---------------------------------------------------------------------------------------
 # enter list of fleet number and allocation group assignment, if any; terminate with fleet=-9999
@@ -217,7 +169,7 @@ fore1$fleet_assignment_to_allocation_group <-fleet.as.all
 # terminate with -9999 in year field 
 fore1$N_allocation_groups<-1
 
-allocation<-data.frame(Year=2022,Group1=1)
+allocation<-data.frame(Year=2023,Group1=1)
 row.names(allocation)<-"#_allocation_among_groups1"
 
 fore1$allocation_among_groups<-allocation
@@ -251,11 +203,11 @@ exe_path <- here("Ejecutables_SS3","3.30.18_release")
 ss_exe_mac <- paste(exe_path,"ss_osx",sep= "/")
 
 r4ss::run(
-  dir = dirname_base,
+  dir = dirname_mod,
   exe = ss_exe_mac,
   extras = "",
   skipfinished = FALSE,
-  show_in_console = FALSE,
+  show_in_console = TRUE,
   verbose = TRUE
 )
 ```

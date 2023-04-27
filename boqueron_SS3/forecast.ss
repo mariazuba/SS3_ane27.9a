@@ -1,7 +1,7 @@
 #C forecast file written by R function SS_writeforecast
 #C rerun model to get more complete formatting in forecast.ss_new
 #C should work with SS version: 3.3
-#C file write time: 2023-04-19 15:20:05
+#C file write time: 2023-04-23 14:08:40
 #
 1 #_benchmarks
 2 #_MSY
@@ -25,11 +25,11 @@
 -1 #_fcast_rec_option
 0 #_fcast_rec_val
 0 #_Forecast_loop_control_5
-2022 #_FirstYear_for_caps_and_allocations
+2023 #_FirstYear_for_caps_and_allocations
 0 #_stddev_of_log_catch_ratio
 0 #_Do_West_Coast_gfish_rebuilder_output
 1989 #_Ydecl
-2019 #_Yinit
+2022 #_Yinit
 1 #_fleet_relative_F
 # Note that fleet allocation is used directly as average F if Do_Forecast=4 
 2 #_basis_for_fcast_catch_tuning
@@ -42,7 +42,7 @@
        1     1
 -9999 -1
  #_Year Group1
-   2022      1
+   2023      1
 -9999 -1
 2 #_InputBasis
 -9999 0 0 0

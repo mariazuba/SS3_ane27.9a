@@ -340,13 +340,15 @@ ggplot(fleet.ldist.alkseine_xxx, aes(x=length, y=number,group=age,colour=as.char
 ```{r}
 #bajarlo desde Github SS3
 dirname.base <- here("modelos_SS3","simple")
+#dirname.base <- here("10a_anchcadiz")
+
 ```
 
 #### Creamos un nuevo directorio para la nueva versión del modelo modificado 
 \quad
 ```{r}
 dirname.simple_mod <- here("boqueron_SS3")
-dir.create(path=dirname.simple_mod, showWarnings = TRUE, recursive = TRUE)
+#dir.create(path=dirname.simple_mod, showWarnings = TRUE, recursive = TRUE)
 ```
 
 #### Copiamos los archivos para el modelo que vamos a  modificar
@@ -369,14 +371,17 @@ Revisamos los nombres de los componentes de la lista del archivo `.dat`
 
 ```{r}
 
+#dat <- r4ss::SS_readdat(here(dirname.base,"monthanch.dat")) #base
 dat <- r4ss::SS_readdat(here(dirname.base,"data.ss")) #base
 dat1<-dat # para modificar
 #names(dat1) # muestra los objetos de la lista
 ```
 
 
+
 ```{r}
 #Especificaciones iniciales
+dat1$Comments       <- "#C 2022 Anchoveta Cadiz data file MODELO TRIMESTRAL"
 dat1$styr           <-1989  #_StartYr
 dat1$endyr          <-2022  #_EndYr
 dat1$nseas          <-4     #_Nseas
@@ -389,6 +394,8 @@ dat1$Nsexes         <-1
 dat1$Nages          <-4    #_Nages=accumulator age, first age is always age 0
 dat1$N_areas        <-1     #_Nareas
 dat1$Nfleets        <-3     #_Nfleets (including surveys)
+
+dat1[1:15]
 ```
 
 ### Capturas en formato `SS3`
@@ -400,63 +407,73 @@ Primero ingresamos las especificaciones de los Datos de captura de la flota
 
 #### Especificaciones de datos de captura
 \quad
+
+ `fleetinfo` es una matriz donde se ingresan las especificaciones de los datos de captura y debe contener la siguiente información:
+
+- `type`: **1**=catch fleet; **2**=bycatch only fleet; **3**=survey; **4**=ignore 
+- `surveytiming`: -1 for fishing fleet to use season-long catch-at-age for observations, or 1 to use observation month;  (always 1 for surveys)
+- `area`:  area the fleet/survey operates in 
+- `units`:  **1**=bio; **2**=num (ignored for surveys; their units read later)
+- `need_catch_mult`: **0**=no; **1**=yes
+- `fleetname`: 
+
 ```{r}
-#---------------------------------------------------------------------------------
-#_fleet_type: 1=catch fleet; 2=bycatch only fleet; 3=survey; 4=ignore 
-#_sample_timing: -1 for fishing fleet to use season-long catch-at-age for 
-#observations, or 1 to use observation month;  (always 1 for surveys)
-#_fleet_area:  area the fleet/survey operates in 
-#_units of catch:  1=bio; 2=num (ignored for surveys; their units read later)
-#_catch_mult: 0=no; 1=yes
-#_rows are fleets
-#_fleet_type fishery_timing area catch_units need_catch_mult fleetname
 #---------------------------------------------------------------------------------
 # Arreglo de datos
 fleetnames1       <-c("FLOTA", "PELAGO", "ECOCADIZ")     
 type1             <-c(1,3,3)
-surveytiming1     <-c(-1,0.08,0.4)
-units_of_catch1   <-c(1,1,1) 
+surveytiming1     <-c(-1,0.08,0.4) 
+units_of_catch1   <-c(2,2,2) # flota comercial y ambas campañas en número
 areas1            <-c(1,1,1) 
 need_catch_mult1  <-c(0,0,0)
-#---------------------------------------------------------------------------------
-# crear data.frame 
+
 fleetinfo1<-data.frame(type            = type1,
                        surveytiming    = surveytiming1,
                        area            = areas1,
                        units           = units_of_catch1,
                        need_catch_mult = need_catch_mult1,
                        fleetname       = fleetnames1)
-#---------------------------------------------------------------------------------
 dat1$fleetinfo<-fleetinfo1     
+#---------------------------------------------------------------------------------
+# revisar salida final
+dat1$fleetinfo
 #---------------------------------------------------------------------------------
 ```
 
 #### Datos de captura
 \quad
+
+`catch` es una matriz que contiene la siguiente información;
+
+- `year`: años de información de capturas de la flota comercial
+- `seas`: mes de captura
+- `fleet`: número de flota
+- `catch`: datos de captura en número o toneladas según como se ha especificado anteriormente
+- `catch_se`: standard error of log(catch)
+
+NOTE:  catch data is ignored for survey fleets
+
+
 ```{r}
 #---------------------------------------------------------------------------------
-#_Catch data: yr, seas, fleet, catch, catch_se
-#_catch_se:  standard error of log(catch)
-#_NOTE:  catch data is ignored for survey fleets
-#---------------------------------------------------------------------------------
 # Arreglo de Datos
-year           <- capturas$year
+year           <- capturas$year # esta información se extrae de los archivos de GADGET
 nyear          <- length(year)
 
 catch_year     <- c(rep(-999,4),year)
-catch_seas     <- c(seq(1,4,1),capturas$step)
+catch_seas     <- c(seq(1,4,1),capturas$step) # esta información se extrae de los archivos de GADGET
 catch_fleet    <- rep(1,nyear+4)
-catch_catch    <- c(rep(0,4),capturas$number)
+catch_catch    <- c(rep(0,4),capturas$number) # esta información se extrae de los archivos de GADGET
 catch_catch_se <- rep(0.01,nyear+4) # se asume cv = 0.01 Revisar!!!!
-#---------------------------------------------------------------------------------
-# crear data.frame 
 catch1<-data.frame(year     = catch_year,
                    seas     = catch_seas,
                    fleet    = catch_fleet,
                    catch    = catch_catch,
                    catch_se = catch_catch_se)
-#---------------------------------------------------------------------------------
 dat1$catch<-catch1 
+#---------------------------------------------------------------------------------
+# revisar salida final
+head(dat1$catch, n=15)
 #---------------------------------------------------------------------------------
 ```
 
@@ -470,34 +487,34 @@ Luego viene la especificación de los índices de abundancia.  Primero está la 
 
 [Consulte la Guía de usuario de SS3: Sección 7.10 "Indices"](https://nmfs-stock-synthesis.github.io/doc/SS330_User_Manual.html#indices).
 
-#### Especificaciones de los índices de abundancia
+#### Especificaciones de los índices de abundancia (CPUE y/o Campañas)
 \quad
+
+`CPUEinfo` Es una matriz que contiene la siguiente información;
+
+- `Fleet`:
+- `Units`:  0=numbers; 1=biomass; 2=F; >=30 for special types
+- `Errtype`:  -1=normal; 0=lognormal; >0=T
+- `SD_Report`: 0=no sdreport; 1=enable sdreport
+
+
 ```{r}
-#---------------------------------------------------------------------------------
-#_CPUE_and_surveyabundance_observations
-#_Units:  0=numbers; 1=biomass; 2=F; >=30 for special types
-#_Errtype:  -1=normal; 0=lognormal; >0=T
-#_SD_Report: 0=no sdreport; 1=enable sdreport
-#_Fleet Units Errtype SD_Report
 #---------------------------------------------------------------------------------
 # Arreglo de datos
 CPUEinfo_Fleet     <- c(1,2,3)
-CPUEinfo_Units     <- c(1,1,1) # unidades la dejamos en 1=biomass Revisar!!!
-CPUEinfo_Errtype   <- c(0,0,0) # en general se trabaja lognormal
-CPUEinfo_SD_Report <- c(0,0,0) # esto se puede cambiar después si se necesita
-                               # SD_Report, por ahora no es necesario...
-CPUEinfo_names<-fleetnames1 
-#---------------------------------------------------------------------------------
-# crear data.frame 
+CPUEinfo_Units     <- c(1,1,1) 
+CPUEinfo_Errtype   <- c(0,0,0) 
+CPUEinfo_SD_Report <- c(0,0,0) 
+CPUEinfo_names     <-fleetnames1  
 CPUEinfo1<-data.frame(Fleet     = CPUEinfo_Fleet,
                       Units     = CPUEinfo_Units,
                       Errtype   = CPUEinfo_Errtype,
                       SD_Report = CPUEinfo_SD_Report)
-
 row.names(CPUEinfo1)<-CPUEinfo_names
-#---------------------------------------------------------------------------------
 dat1$CPUEinfo<-CPUEinfo1 
-#dat1$CPUEinfo
+#---------------------------------------------------------------------------------
+# revisar salida final
+dat1$CPUEinfo
 #---------------------------------------------------------------------------------
 ```
 
@@ -511,32 +528,34 @@ dat1$CPUEinfo<-CPUEinfo1
 
 #### Datos de índices de abundancia
 \quad
+
+`CPUE` es una matriz que contiene la siguiente información:
+
+- `year`:
+- `seas`:
+- `index`:
+- `obs`:
+- `se_log`:
+
+
 ```{r}
 #---------------------------------------------------------------------------------
 # Arreglo de datos
+CPUE_year  <-c(pelago$year,ecocadiz$year) 
+CPUE_seas  <-rep(1,length(CPUE_year)) 
+CPUE_index <-c(rep(2,length(pelago$year)),rep(3,length(ecocadiz$year))) 
+CPUE_obs   <-c(pelago$number,ecocadiz$number)  
+CPUE_se_log<-c(rep(0.3,length(pelago$year)),rep(0.3,length(ecocadiz$year))) 
 
-CPUE_year<-c(pelago$year,ecocadiz$year)
-#CPUE_seas = fecha e las campañas, se asume 1 (enero), 
-#corregir por el mes correspondiente
-CPUE_seas<-rep(1,length(CPUE_year)) 
-# Los números de "CPUE_index" son los mismos números de "Fleet" 
-# que se especifican en "CPUEinfo"
-CPUE_index<-c(rep(2,length(pelago$year)),
-              rep(3,length(ecocadiz$year))) 
-CPUE_obs<-c(pelago$number,
-            ecocadiz$number)  
-CPUE_se_log<-c(rep(0.3,length(pelago$year)),
-               rep(0.3,length(ecocadiz$year))) 
-#---------------------------------------------------------------------------------
-# crear data.frame 
 CPUE1<-data.frame(year   = CPUE_year,
                   seas   = CPUE_seas,
                   index  = CPUE_index,
                   obs    = CPUE_obs,
                   se_log = CPUE_se_log)
-#---------------------------------------------------------------------------------
 dat1$CPUE<-CPUE1 
-#dat1$CPUE
+#---------------------------------------------------------------------------------
+# revisar salida final
+head(dat1$CPUE,n=10)
 #---------------------------------------------------------------------------------
 ```
 
@@ -548,38 +567,30 @@ A continuación, se podrían especificar los datos de descartes y tallas media.
 
 #### Descarte
 \quad
+
+`N_discard_fleets`:
+
 ```{r}
-dat1$N_discard_fleets<-0 #_N_fleets_with_discard
 #---------------------------------------------------------------------------------
-#_discard_units (1=same_as_catchunits(bio/num); 
-#                2=fraction; 
-#                3=numbers)
-#_discard_errtype:  >0 for DF of T-dist(read CV below); 
-#                    0 for normal with CV; 
-#                   -1 for normal with se; 
-#                   -2 for lognormal; 
-#                   -3 for trunc normal with CV
-# note: only enter units and errtype for fleets with discard 
-# note: discard data is the total for an entire season, so input of month
-#       here must be to a month in that season
-#_Fleet units errtype
+dat1$N_discard_fleets<-0 
+dat1$N_discard_fleets
 #---------------------------------------------------------------------------------
-# -9999 0 0 0.0 0.0 # terminator for discard data 
 ```
 
 #### Tallas medias
 \quad
+
+`use_meanbodywt`:
+
 ```{r}
-dat1$use_meanbodywt<-0 #_use meanbodysize_data (0/1)
 #---------------------------------------------------------------------------------
-#_COND_0 #_DF_for_meanbodysize_T-distribution_like
-# note:  type=1 for mean length; type=2 for mean body weight 
-#_yr month fleet part type obs stderr
+dat1$use_meanbodywt<-0 
+dat1$use_meanbodywt
 #---------------------------------------------------------------------------------
-#  -9999 0 0 0 0 0 0 # terminator for mean body size data 
 ```
 
 ### Composición de tallas Formato `SS3`
+
 La siguiente sección configura los intervalos de talla (`length bin`) de la población. 
 
 Esto debe especificarse ya sea que se utilicen o no datos de composiciones de tallas (aunque podría generar los intervalos de longitud de la población a partir de los intervalos de datos de composiciones de tallas). 
@@ -588,40 +599,44 @@ Esto debe especificarse ya sea que se utilicen o no datos de composiciones de ta
 
 #### Bins tallas
 \quad
+
+set up population length bin structure (note - irrelevant if not using size data and using empirical wtatage)
+
+- `lbin_method`:  length bin method: 1=use databins; 2=generate from binwidth,min,max below; 3=read vector
+- `binwidth`: binwidth for population size comp 
+- `minimum_size`: minimum size in the population (lower edge of first bin and size at age 0.00)
+- `maximum_size`: maximum size in the population (lower edge of last bin)  
+- `use_lencomp`: use length composition data (0/1)
+
 ```{r}
-# set up population length bin structure (note - irrelevant if not using size 
-#data and using empirical wtatage
-dat1$lbin_method  <-2     # length bin method:
-                          # 1=use databins; 
-                          # 2=generate from binwidth,min,max below;
-                          # 3=read vector
-dat1$binwidth     <-0.5   # binwidth for population size comp 
-dat1$minimum_size <-3.5   # minimum size in the population 
-                          # (lower edge of first bin and size at age 0.00) 
-dat1$maximum_size <-21.5  # maximum size in the population (lower edge of last bin) 
-dat1$use_lencomp  <-1     # use length composition data (0/1)
+#---------------------------------------------------------------------------------
+dat1$lbin_method  <-2     
+dat1$binwidth     <-0.5   
+dat1$minimum_size <-0    
+dat1$maximum_size <-21.5   
+dat1$use_lencomp  <-1     
+#---------------------------------------------------------------------------------
+#revisar salida final
+dat1[26:30]
+#---------------------------------------------------------------------------------
 ```
 
 Después de los intervalos de tallas de la población está la especificación para la composición de tallas (asumiendo 1 línea por flota):
 
 #### Especificación composición de tallas
 \quad
+
+`len_info` es una matriz que contiene la siguiente información:
+
+- `mintailcomp`:  upper and lower distribution for females and males separately are accumulated until exceeding this level.
+- `addtocomp`:    after accumulation of tails; this value added to all bins
+- `combM+F`:      males and females treated as combined gender below this bin number 
+- `compressbins`: accumulate upper tail by this number of bins; acts simultaneous with mintailcomp; set=0 for no forced accumulation
+- `Comp_Error`:   0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta,3=MV_Tweedie
+- `ParmSelect`:   consecutive index for dirichlet or MV_Tweedie
+- `minsamplesize`: minimum sample size; set to 1 to match 3.24, minimum value is 0.001
+
 ```{r}
-#---------------------------------------------------------------------------------
-#_mintailcomp:  upper and lower distribution for females and males separately are 
-#               accumulated until exceeding this level.
-#_addtocomp:    after accumulation of tails; this value added to all bins
-#_combM+F:      males and females treated as combined gender below this bin number 
-#_compressbins: accumulate upper tail by this number of bins; acts simultaneous with
-#               mintailcomp; set=0 for no forced accumulation
-#_Comp_Error:   0=multinomial, 
-#               1=dirichlet using Theta*n, 
-#               2=dirichlet using beta, 
-#               3=MV_Tweedie
-#_ParmSelect:  consecutive index for dirichlet or MV_Tweedie
-#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001
-#
-#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize
 #---------------------------------------------------------------------------------
 # Arreglo de datos
 nfleets<-dat1$Nfleets
@@ -632,8 +647,6 @@ len_info_CompressBins  <-rep(0,nfleets)
 len_info_CompError     <-rep(0,nfleets)
 len_info_ParmSelect    <-rep(0,nfleets)
 len_info_minsamplesize <-rep(1,nfleets)
-#---------------------------------------------------------------------------------
-# crear data.frame 
 len_info1<-data.frame(mintailcomp     = len_info_mintailcomp,
                         addtocomp     = len_info_addtocomp,
                         combine_M_F   = len_info_combine_M_F,
@@ -641,51 +654,58 @@ len_info1<-data.frame(mintailcomp     = len_info_mintailcomp,
                         CompError     = len_info_CompError,
                         ParmSelect    = len_info_ParmSelect,
                         minsamplesize = len_info_minsamplesize)
-
 row.names(len_info1)<-fleetnames1 
+dat1$len_info<-len_info1
 #---------------------------------------------------------------------------------
-dat1$len_info<-len_info1 #data.frame
-#dat1$len_info
+# revisar salida final
+dat1$len_info
 #---------------------------------------------------------------------------------
 ```
 
 #### Especificación del vector de tallas
 \quad
+
 ```{r}
+#---------------------------------------------------------------------------------
 dat1$N_lbins<-37  
 dat1$lbin_vector<-seq(3.5,21.5,0.5) 
+#---------------------------------------------------------------------------------
+# revisar salida final
+dat1[32:33]
+#---------------------------------------------------------------------------------
 ```
 
 #### Datos de composición de tallas
 \quad
+
+`lencomp` es una matriz que contiene la siguiente información:
+
+- `Yr`:
+- `Seas`:
+- `FltSvy`:
+- `Gender`: sex codes:  0=combined; 1=use female only; 2=use male only; 3=use both as joint sexxlength distribution
+- `Part`: partition codes:  (0=combined; 1=discard; 2=retained
+- `Nsamp`:
+
+
 ```{r }
-#---------------------------------------------------------------------------------
-# sex codes:  0=combined; 
-#             1=use female only; 
-#             2=use male only; 
-#             3=use both as joint sexxlength distribution
-# partition codes:  (0=combined; 
-#                    1=discard; 
-#                    2=retained
-#---------------------------------------------------------------------------------
+# #---------------------------------------------------------------------------------
 # Arreglo de datos
 #---------------------------------------------------------------------------------
 tallasplot<-merge(tallasflota,
             merge(tallaspelago,tallasecocadiz,
                   by=c('year','step','area','age','length',"text"),all=TRUE),
                   by=c('year','step','area','age','length',"text"),all=TRUE) %>% 
-               select(-area, -age,-text)%>% 
-               magrittr::set_colnames(c('year','step','length','FLOTA','PELAGO','ECOCADIZ')) %>%
-               mutate(Gender=0,
+            select(-area, -age,-text)%>% 
+            magrittr::set_colnames(c('year','step','length','FLOTA','PELAGO','ECOCADIZ')) %>%
+            mutate(Gender=0,
                       Part=0,
                       Nsamp=100) %>%
-               melt(id.vars=c('year','step','length','Gender','Part','Nsamp')) %>% 
-               spread(length,value) 
+            melt(id.vars=c('year','step','length','Gender','Part','Nsamp')) %>% 
+            spread(length,value) 
 
 tallasSS3<-tallasplot[order(tallasplot$variable),]
 tallasSS3[is.na(tallasSS3)] <- 0              
-#---------------------------------------------------------------------------------
-
 nyear<-length(tallasSS3$year)/3
 
 new_lencomp <- data.frame(Yr     = tallasSS3$year, 
@@ -699,16 +719,17 @@ dat_rows_names <- paste("L",seq(3.5,21.5,0.5) ,sep="")
 
 dat_rows <- tallasSS3[,7:43]
 names(dat_rows)<-dat_rows_names 
-#---------------------------------------------------------------------------------
-# crear data.frame 
 new_lencomp1<-cbind(new_lencomp, dat_rows)
-#---------------------------------------------------------------------------------
+
 dat1$lencomp<-new_lencomp1 
-#dat1$lencomp
+#---------------------------------------------------------------------------------
+# revisar salida final
+dat1$lencomp[1:10,1:10]
 #---------------------------------------------------------------------------------
 ```
 
 ### Composición de edad Formato `SS3`
+
 A continuación se presentan los datos de composición por edad. En primer lugar, se establecen las categorías de edad y las definiciones de error de edad.
 
 [Consulte la Guía de usuario de SS3: Sección 7.16 "Age Composition Option"](https://nmfs-stock-synthesis.github.io/doc/SS330_User_Manual.html#age-composition-option).
@@ -716,114 +737,120 @@ A continuación se presentan los datos de composición por edad. En primer lugar
 #### Bins de edad
 \quad
 ```{r}
-dat1$N_agebins<-0 
-dat1$agebin_vector<-"#"
+#---------------------------------------------------------------------------------
+dat1$N_agebins<-0
+dat1$N_agebins
+dat1$agebin_vector<-NULL
+dat1$agebin_vector
+#---------------------------------------------------------------------------------
 ```
 
 #### Datos de error edad
 \quad
+
+Aquí se ingresa la matriz se error de lectura de edad, si no se ingresa datos de edad entonces de deja `NULL`
+
+`ageerror` es una matriz que contiene la siguiente información:
+
+
 ```{r}
-# Arreglo de datos
-matrix_ageerror<-"#"
-#---------------------------------------------------------
-dat1$N_ageerror_definitions<- "#" #_N_ageerror_definitions
-dat1$ageerror<-matrix_ageerror #_ageerror_definitions
+#---------------------------------------------------------------------------------
+dat1$N_ageerror_definitions<- NULL 
+dat1$N_ageerror_definitions
+dat1$ageerror<-NULL 
+dat1$ageerror
+#---------------------------------------------------------------------------------
 ```
 
 #### Especificaciones de los datos de composicion de edad
 \quad
-```{r}
-#------------------------------------------------------------------------------------------
-#_mintailcomp:  upper and lower distribution for females and males separately are 
-#               accumulated until exceeding this level.
-#_addtocomp:    after accumulation of tails; this value added to all bins
-#_combM+F:      males and females treated as combined gender below this bin number 
-#_compressbins: accumulate upper tail by this number of bins; acts simultaneous 
-#               with mintailcomp; set=0 for no forced accumulation
-#_Comp_Error:   0=multinomial, 
-#               1=dirichlet using Theta*n, 
-#               2=dirichlet using beta, 
-#               3=MV_Tweedie
-#_ParmSelect:   consecutive index for dirichlet or MV_Tweedie
-#_minsamplesize: minimum sample size; set to 1 to match 3.24, minimum value is 0.001
-#
-#_mintailcomp addtocomp combM+F CompressBins CompError ParmSelect minsamplesize
-#------------------------------------------------------------------------------------------
-# crear data.frame 
-age_info1<-data.frame(mintailcomp="#",
-                      addtocomp="#",
-                      combine_M_F="#",
-                      CompressBins="#",
-                      CompError="#",
-                      ParmSelect="#",
-                      minsamplesize="#")
 
-row.names(age_info1)<-"#"
+`age_info` es una matriz que contiene las especificaciones de los datos de composición de edad. A continuación se detalla el contenido de esta matriz:
+
+- `mintailcomp`:  upper and lower distribution for females and males separately are accumulated until exceeding this level.
+- `addtocomp`:    after accumulation of tails; this value added to all bins
+- `combM+F`:      males and females treated as combined gender below this bin number 
+- `compressbins`: accumulate upper tail by this number of bins; acts simultaneous  with mintailcomp; set=0 for no forced accumulation
+- `Comp_Error`:   0=multinomial, 1=dirichlet using Theta*n, 2=dirichlet using beta, 3=MV_Tweedie
+- `ParmSelect`:   consecutive index for dirichlet or MV_Tweedie
+- `minsamplesize`: minimum sample size; set to 1 to match 3.24, minimum value is 0.001
+
+
+```{r}
 #---------------------------------------------------------------------------------
-dat1$age_info<-age_info1 
+dat1$age_info<-NULL
+dat1$age_info
 #---------------------------------------------------------------------------------
 ```
 
 #### Datos de composicion de edad
 \quad
+
+`Lbin_method` se debe ingresar una de las siguientes opciones; 1=poplenbins; 2=datalenbins; 3=lengths
+`agecomp`: es una matriz que contiene la siguiente información:
+
+- `Yr`:
+- `Seas`:
+- `FltSvy`:
+- `Gender`: sex codes:  0=combined;1=use female only; 2=use male only; 3=use both as joint sexxlength distribution
+- `Part`: partition codes:  (0=combined; 1=discard; 2=retained
+- `Ageerr`: 
+- `Lbin_lo`:
+- `Lbin_hi`:
+- `Nsamp`:
+
+NOTA: si no se ingresan datos de edad entonces `Lbin_method` y `agecomp` = `NULL`
+
 ```{r}
-#------------------------------------------------------------------------------------------
-dat1$Lbin_method <- "#" #_Lbin_method_for_Age_Data: 1=poplenbins; 2=datalenbins; 3=lengths
-#------------------------------------------------------------------------------------------
-# sex codes:  0=combined; 
-#             1=use female only; 
-#             2=use male only; 
-#             3=use both as joint sexxlength distribution
-# partition codes:  (0=combined; 
-#                    1=discard; 
-#                    2=retained
-#_yr month fleet sex part ageerr Lbin_lo Lbin_hi Nsamp datavector(female-male)
-#------------------------------------------------------------------------------------------
-# Arreglo de datos
-new_agecomp<-data.frame(Yr="#", 
-                        Seas="#", 
-                        FltSvy="#", 
-                        Gender="#", 
-                        Part="#",  
-                        Ageerr="#", 
-                        Lbin_lo="#", 
-                        Lbin_hi="#", 
-                        Nsamp="#")
-
-
-dat_rows_names<- "#" #paste("E",seq(0,5,1),sep="")
-
-#names(data.age)<-dat_rows_names 
-
-new_agecomp<- "#" #cbind(new_agecomp, data.age)
 #---------------------------------------------------------------------------------
-dat1$agecomp<-new_agecomp
+dat1$Lbin_method <- NULL 
+dat1$Lbin_method
+#---------------------------------------------------------------------------------
+# Arreglo de datos
+new_agecomp<-data.frame(Yr=0, 
+                        Seas=0, 
+                        FltSvy=0, 
+                        Gender=0, 
+                        Part=0,  
+                        Ageerr=0, 
+                        Lbin_lo=0, 
+                        Lbin_hi=0, 
+                        Nsamp=0)
+dat_rows_names<- paste("E",seq(0,5,1),sep="")
+#names(data.age)<-dat_rows_names 
+dat1$agecomp<-NULL
+dat1$agecomp
+#---------------------------------------------------------------------------------
+
 #---------------------------------------------------------------------------------
 ``` 
 
-\newpage
 
 ### Otros datos
 
 #### Tallas medias a la edad
 \quad
+
+`use_MeanSize_at_Age_obs`: Use_MeanSize-at-Age_obs (0/1)
+`MeanSize_at_Age_obs` es una matriz que contiene la siguiente información:
+
+- `Yr`:
+- `Seas`:
+- `FltSvy`:
+- `Gender`:  sex codes:  0=combined;1=use female only; 2=use male only; 3=use both as joint sexxlength distribution
+- `Part`: partition codes:  (0=combined;  1=discard;  2=retained
+- `AgeErr`: ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age
+- `Ignore`:
+
+NOTA: si no se ingresan datos de tallas medias a la edad  entonces `use_MeanSize_at_Age_obs` = 0 y `MeanSize_at_Age_obs` = `NULL`
+
 ```{r}
 #---------------------------------------------------------------------------------
-dat1$use_MeanSize_at_Age_obs <- 0 #_Use_MeanSize-at-Age_obs (0/1)
-#---------------------------------------------------------------------------------
-# sex codes:  0=combined; 
-#             1=use female only; 
-#             2=use male only; 
-#             3=use both as joint sexxlength distribution
-# partition codes:  (0=combined; 
-#                    1=discard; 
-#                    2=retained
-# ageerr codes:  positive means mean length-at-age; negative means mean bodywt_at_age
-#_yr month fleet sex part ageerr ignore datavector(female-male)
-#                                          samplesize(female-male)
+dat1$use_MeanSize_at_Age_obs <- 0 
+dat1$use_MeanSize_at_Age_obs
 #---------------------------------------------------------------------------------
 # Arreglo de datos
-MeanSize_at_Age_obs_esp<-data.frame(Yr="# -9999",
+MeanSize_at_Age_obs_esp<-data.frame(Yr=0,
                                     Seas=0,
                                     FltSvy=0,
                                     Gender=0,
@@ -831,7 +858,7 @@ MeanSize_at_Age_obs_esp<-data.frame(Yr="# -9999",
                                     AgeErr=0,
                                     Ignore=0)
 
-dat_rows_names <- "#" #c(paste("L",seq(0,5,1),sep=""),paste("nmL",seq(0,5,1),sep="")) # los datos de esta matriz son las tallas medias por edad y tamaño de muestra...corregir!!!!
+dat_rows_names <- c(paste("L",seq(0,5,1),sep=""),paste("nmL",seq(0,5,1),sep="")) 
 dat_rows <- as.data.frame(matrix(data = 0, 
                                  nrow = nrow(MeanSize_at_Age_obs_esp), 
                                  ncol = length(dat_rows_names)))
@@ -840,54 +867,49 @@ names(dat_rows)<-dat_rows_names
 # crear data.frame 
 MeanSize_at_Age_obs1 <-cbind(MeanSize_at_Age_obs_esp, dat_rows)
 #---------------------------------------------------------------------------------
-dat1$MeanSize_at_Age_obs<-MeanSize_at_Age_obs1 
+dat1$MeanSize_at_Age_obs<-NULL #MeanSize_at_Age_obs1
+dat1$MeanSize_at_Age_obs
 #---------------------------------------------------------------------------------
 ```
 
 #### Datos ambientales 
 \quad
-(tarea = buscar ejemplo donde ingresen estos datos)
+
+
 ```{r}
-dat1$N_environ_variables<-0 #_N_environ_variables
-# -2 in yr will subtract mean for that env_var; 
-# -1 will subtract mean and divide by stddev (e.g. Z-score)
-#Yr Variable Value
-#
+dat1$N_environ_variables<-0 
+dat1$N_environ_variables
 ```
 
 #### Sizefreq data 
 \quad
-(tarea = buscar ejemplo donde ingresen estos datos)
 ```{r}
-# Sizefreq data. Defined by method because a fleet can use multiple methods
-dat1$N_sizefreq_methods<-0 # N sizefreq methods to read (or -1 for expanded options)
+dat1$N_sizefreq_methods<-0 
+dat1$N_sizefreq_methods
 ```
 
 #### Datos de tags
 \quad
 
 ```{r}
-dat1$do_tags<-0 # do tags (0/1/2); where 2 allows entry of TG_min_recap
+dat1$do_tags<-0 
+dat1$do_tags
 ```
 
 #### Datos de morfos 
 \quad
 
 ```{r}
-dat1$morphcomp_data<-0 #    morphcomp data(0/1) 
-#  Nobs, Nmorphs, mincomp
-#  yr, seas, type, partition, Nsamp, datavector_by_Nmorphs
-#
+dat1$morphcomp_data<-0 
+dat1$morphcomp_data
 ```
 
 ##### Priors de selectividad
 \quad
 
 ```{r}
-dat1$use_selectivity_priors<-0 #  Do dataread for selectivity priors(0/1)
-# Yr, Seas, Fleet,  Age/Size,  Bin,  selex_prior,  prior_sd
-# feature not yet implemented
-#
+dat1$use_selectivity_priors<-0 
+dat1$use_selectivity_priors
 ```
 
 #### Final de archivo data.ss
@@ -895,6 +917,9 @@ dat1$use_selectivity_priors<-0 #  Do dataread for selectivity priors(0/1)
 imprime línea final
 ```{r}
 dat1$eof<-TRUE 
+dat1$eof
+
+
 ```
 
 

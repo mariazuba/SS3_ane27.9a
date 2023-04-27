@@ -5,8 +5,8 @@
 #_User_info_available_at:https://vlab.noaa.gov/group/stock-synthesis
 #_Source_code_at:_https://github.com/nmfs-stock-synthesis/stock-synthesis
 
-StartTime: Wed Apr 19 15:18:22 2023
-EndTime: Wed Apr 19 15:18:54 2023
+StartTime: Sat Apr 22 10:28:15 2023
+EndTime: Sat Apr 22 10:28:47 2023
 This run took: 0 hours, 0 minutes, 32 seconds.
 Data_File: monthanch.dat
 Control_File: monthanch.ctl
