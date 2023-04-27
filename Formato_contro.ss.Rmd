@@ -942,6 +942,7 @@ ctl1$Q_parms
 [Consulte la Guía de usuario de SS3: 8.9 Selectivity and Discard](https://nmfs-stock-synthesis.github.io/doc/SS330_User_Manual.html#selectivity-and-discard).
 
 
+[ayuda con parámetros de selectividad](https://connect.fisheries.noaa.gov/ss3-helper/)
 
 ### tipos de selectividad a la talla
 
@@ -1331,6 +1332,10 @@ r4ss::SS_writectl(ctl1,
                   outfile=here(dirname.mod,"control.ss"),
                   overwrite = TRUE)
 #----------------------------------------------------------------
+
+
+#zip("sources.zip", here("boqueron_SS3"))
+
 ```
 
 
