@@ -68,10 +68,10 @@ Capturas anuales del stock (toneladas)
 capturas<-read.table(file=here('Data_Gadget',"fleet.seine.data"),
                          header=F,sep="",na='NA',fill=T,skip = 3) %>% 
              magrittr::set_colnames(c('year','step','area','vessel','number'))
-#capturas
+head(capturas)
 ```
 
-```{r fig.height=5,fig.width=8,echo=F}
+```{r fig.height=3,fig.width=6,echo=F}
 
 capturaplot<-capturas %>% mutate(ytr=as.yearqtr(year + step/4))
 
@@ -81,6 +81,28 @@ ggplot(capturaplot,aes(x=ytr,y=number/1000000))+
    labs(x="Años/Trimestres", y="Capturas en número (millones)") +  
    theme_bw() + 
 scale_x_yearqtr(format = "%Y-T%q")
+
+
+
+```
+
+
+```{r fig.height=3,fig.width=4,echo=FALSE}
+ggplot(capturaplot) +
+    geom_boxplot(aes(x = as.factor(step), y = number/1000000),notch = TRUE) +  
+   labs(x="Trimestres", y="Capturas en numero") +  
+   theme_bw() + 
+    theme(plot.title = element_text(size = 12))
+
+```
+
+
+```{r fig.height=3,fig.width=8,echo=FALSE}
+ggplot(capturaplot) +
+    geom_boxplot(aes(x = as.factor(year), y = number/1000000)) +  
+   labs(x="Años", y="Capturas en numero") +  
+   theme_bw() + 
+    theme(plot.title = element_text(size = 12))
 
 ```
 
@@ -92,12 +114,12 @@ scale_x_yearqtr(format = "%Y-T%q")
 pelago<-read.table(file=here('Data_Gadget',"surveyindices.pelagonumber.survey.lengths"),
                          header=F,sep="",na='NA',fill=T,skip = 3) %>% 
                      magrittr::set_colnames(c('year','step','area','length','number'))
-#pelago
+head(pelago)
 #----------------------------------------------------------------------------------------
 ecocadiz<-read.table(file=here('Data_Gadget',"surveyindices.ecocadiz.survey.lengths"),
                          header=F,sep="",na='NA',fill=T,skip = 3)%>% 
                      magrittr::set_colnames(c('year','step','area','length','number'))
-#ecocadiz
+head(ecocadiz)
 #----------------------------------------------------------------------------------------
 ```
 
@@ -129,21 +151,21 @@ tallaspelago<-read.table(file=here('Data_Gadget',"catchdistribution.ldist.pelago
                magrittr::set_colnames(c('year','step','area','age','length','number')) %>%
                       separate(length,into=c("text","length"),sep=3,convert =TRUE)
 
-#tallaspelago
+head(tallaspelago)
 #---------------------------------------------------------------------------------
 tallasecocadiz<-read.table(file=here('Data_Gadget',"catchdistribution.ldist.ecocadiz.noage.sumofsquares"),
                          header=F,sep="",na='NA',fill=T,skip = 3) %>% 
                magrittr::set_colnames(c('year','step','area','age','length','number')) %>%
                       separate(length,into=c("text","length"),sep=3,convert =TRUE)
 
-#tallasecocadiz
+head(tallasecocadiz)
 #---------------------------------------------------------------------------------
 tallasflota<-read.table(file=here('Data_Gadget',"catchdistribution.ldist.seine.sumofsquares"),
                          header=F,sep="",na='NA',fill=T,skip = 3) %>% 
                magrittr::set_colnames(c('year','step','area','age','length','number')) %>%
                       separate(length,into=c("text","length"),sep=3,convert =TRUE)
 
-#tallasflota 
+head(tallasflota) 
 #---------------------------------------------------------------------------------
 
 ```
@@ -161,6 +183,8 @@ ggplot(tallaspelago) +
     theme(plot.title = element_text(size = 8))
 
 ```
+
+
 
 ```{r fig.height=10,fig.width=10,echo=FALSE}
 
@@ -185,6 +209,73 @@ ggplot(tallasflota) +
     theme(panel.grid=element_line(color=NA)) + 
      ggtitle('FLOTA')+
     theme(plot.title = element_text(size = 8))
+
+```
+
+#### Tallas medias 
+```{r fig.height=2.5,fig.width=4,echo=FALSE}
+
+mediaTalla_flota<-as.numeric(tallasflota$length)*as.numeric(tallasflota$number)
+
+TallasMedias_flota<-tallasflota %>% mutate(ytr=as.yearqtr(year + step/4))%>% mutate(value2=mediaTalla_flota) %>% group_by(ytr) %>% 
+  summarize(sum1 = sum(number),sum2 = sum(value2)) %>% mutate(Lmed=sum2/sum1)
+
+ggplot(TallasMedias_flota,aes(x=ytr,y=Lmed))+ 
+  geom_point()+
+   geom_smooth()+
+  #geom_line()+ 
+  lims(y=c(5,15))+
+    labs(x = 'Años', y = 'Tallas medias (cm)') +
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color=NA)) + 
+     ggtitle('Flota')+
+    theme(plot.title = element_text(size = 10))+ 
+    theme_bw(base_size=8) +
+scale_x_yearqtr(format = "%Y-T%q")
+
+```
+
+```{r fig.height=2.5,fig.width=4,echo=FALSE}
+
+mediaTalla_pelago<-as.numeric(tallaspelago$length)*as.numeric(tallaspelago$number)
+
+TallasMedias_pelago<-tallaspelago %>% mutate(ytr=as.yearqtr(year + step/4))%>% mutate(value2=mediaTalla_pelago) %>% group_by(ytr) %>% 
+  summarize(sum1 = sum(number),sum2 = sum(value2)) %>% mutate(Lmed=sum2/sum1)
+
+ggplot(TallasMedias_pelago,aes(x=ytr,y=Lmed))+ 
+  geom_point()+
+   geom_smooth()+
+  #geom_line()+ 
+  lims(y=c(5,15))+
+    labs(x = 'Años', y = 'Tallas medias (cm)') +
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color=NA)) + 
+     ggtitle('Pelago')+
+    theme(plot.title = element_text(size = 10))+ 
+    theme_bw(base_size=8) +
+scale_x_yearqtr(format = "%Y-T%q")
+
+```
+
+```{r fig.height=2.5,fig.width=4,echo=FALSE}
+
+mediaTalla_ecocadiz<-as.numeric(tallasecocadiz$length)*as.numeric(tallasecocadiz$number)
+
+TallasMedias_ecocadiz<-tallasecocadiz %>% mutate(ytr=as.yearqtr(year + step/4))%>% mutate(value2=mediaTalla_ecocadiz) %>% group_by(ytr) %>% 
+  summarize(sum1 = sum(number),sum2 = sum(value2)) %>% mutate(Lmed=sum2/sum1)
+
+ggplot(TallasMedias_ecocadiz,aes(x=ytr,y=Lmed))+ 
+  geom_point()+
+   geom_smooth()+
+  #geom_line()+ 
+  lims(y=c(5,15))+
+    labs(x = 'Años', y = 'Tallas medias (cm)') +
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color=NA)) + 
+     ggtitle('Ecocadiz')+
+    theme(plot.title = element_text(size = 10))+ 
+    theme_bw(base_size=8) +
+scale_x_yearqtr(format = "%Y-T%q")
 
 ```
 
@@ -222,6 +313,15 @@ pelago.aldistSS3[is.na(pelago.aldistSS3)] <- 0
 
 
 ```
+
+
+```{r}
+
+tallaspelago
+
+pelago.aldistSS3
+```
+
 
 
 ```{r fig.height=15,fig.width=10,echo=FALSE}
@@ -326,6 +426,27 @@ ggplot(fleet.ldist.alkseine_xxx, aes(x=length, y=number,group=age,colour=as.char
      ggtitle('FLOTA')+
     theme(plot.title = element_text(size = 6))
 ```
+
+## Parámetros biológicos
+
+### Mortalidad natural
+
+
+```{r}
+
+Edad<-seq(0,3,1)
+Medad<-c(2.21,1.3,1.3,1.3)
+
+dataM<-data.frame(Edad,M=Medad)
+
+ggplot(dataM,aes(x=Edad,y=M))+
+       geom_point()+geom_line()+
+       lims(y=c(0,2.5))+  
+   theme_bw()
+
+```
+
+
 
 
 
