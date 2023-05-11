@@ -279,15 +279,19 @@ scale_x_yearqtr(format = "%Y-T%q")
 
 ```
 
+
 ### Clave talla-edad formato `Gadget`
 
-```{r }
+```{r echo=F }
 
 pelago.aldist<-read.table(file=here("Data_Gadget","catchdistribution.aldist.pelago.sumofsquares"),
                         header=F,sep="",na='NA',fill=T,skip = 3)
 names(pelago.aldist)<-c('year','step','area','age','length','number')
 
+head(pelago.aldist)
 
+#----------------------------------------------------------------------------
+# Se transforma a formato SS3
 pelago.aldist$fleet   <- 2
 pelago.aldist$sex     <- 0
 pelago.aldist$part    <- 0
@@ -300,7 +304,7 @@ pelago.aldist_xxx<- pelago.aldist %>%
                    separate(length,into=c("text","length"),sep=3,convert=TRUE)
 
 
-# Se transforma a formato SS3
+
 pelago.aldistSS3<- pelago.aldist %>%
                    separate(length,into=c("text","length"),sep=3,convert=TRUE)%>% 
                    separate(Lbin_lo,into=c("text","Lbin_lo"),sep=3,convert=TRUE)%>% 
@@ -310,31 +314,74 @@ pelago.aldistSS3<- pelago.aldist %>%
                    select(-area,-length,-text)
 pelago.aldistSS3[is.na(pelago.aldistSS3)] <- 0
 
-
+#head(pelago.aldistSS3)
 
 ```
 
+```{r fig.height=5,fig.width=5,echo=FALSE}
 
-```{r}
+clavepelago<-pelago.aldistSS3
+Lmed_GE1_pelago<-as.numeric(clavepelago$Lbin_hi)*as.numeric(clavepelago$`1`)
+Lmed_GE2_pelago<-as.numeric(clavepelago$Lbin_hi)*as.numeric(clavepelago$`2`)
 
-tallaspelago
+LMED_GE1_pelago<-clavepelago %>% 
+                 mutate(ytr=as.yearqtr(year + step/4))%>%
+                 mutate(L1=Lmed_GE1_pelago) %>% 
+                  group_by(ytr) %>% 
+                summarize(sum1 = sum(`1`),sum2 = sum(L1)) %>% 
+                mutate(Lmed=sum2/sum1)
 
-pelago.aldistSS3
+LMED_GE2_pelago<-clavepelago %>% 
+                 mutate(ytr=as.yearqtr(year + step/4))%>%
+                 mutate(L2=Lmed_GE2_pelago) %>% 
+                  group_by(ytr) %>% 
+                summarize(sum1 = sum(`2`),sum2 = sum(L2)) %>% 
+                mutate(Lmed=sum2/sum1)
+
+ggplot(LMED_GE1_pelago,aes(x=ytr,y=Lmed))+ 
+  geom_point()+
+   geom_smooth()+
+  #geom_line()+ 
+  lims(y=c(5,15))+
+    labs(x = 'Años', y = 'Tallas medias (cm)') +
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color=NA)) + 
+     ggtitle('Talla media del Grupo de edad 1 - Campaña Pelago')+
+    theme(plot.title = element_text(size = 10))+ 
+    theme_bw(base_size=8) +
+scale_x_yearqtr(format = "%Y-T%q")
+
+ggplot(LMED_GE2_pelago,aes(x=ytr,y=Lmed))+ 
+  geom_point()+
+   geom_smooth()+
+  #geom_line()+ 
+  lims(y=c(5,15))+
+    labs(x = 'Años', y = 'Tallas medias (cm)') +
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color=NA)) + 
+     ggtitle('Talla media del Grupo de edad 2 - Campaña Pelago')+
+    theme(plot.title = element_text(size = 10))+ 
+    theme_bw(base_size=8) +
+scale_x_yearqtr(format = "%Y-T%q")
+
 ```
-
 
 
 ```{r fig.height=15,fig.width=10,echo=FALSE}
+
+AGE<-unique(pelago.aldist_xxx$age)
 ggplot(pelago.aldist_xxx, aes(x=length, y=number,group=age,colour=as.character(age))) + 
     geom_line()+
     facet_grid(year~step,  as.table = TRUE,scales = "free") +
     labs(x = 'Tallas', y = 'Abundancia en número') +
     scale_colour_discrete(name  ="Grupos de Edad",
-                            labels=seq(0,4))+
+                            labels=AGE)+
+    scale_colour_manual(values=c('red','green','blue','magenta')) +
     theme(panel.background = element_rect(fill ="gray99")) +
     theme(panel.grid=element_line(color=NA)) +
      ggtitle('PELAGO')+
     theme(plot.title = element_text(size = 8))
+
 ```
 
 
@@ -365,16 +412,68 @@ ecocadiz.aldistSS3  <-ecocadiz.aldist %>%
                       select(-area,-length,-text)
 ecocadiz.aldistSS3[is.na(ecocadiz.aldistSS3)] <- 0
 
+
+```
+
+```{r eval=F}
+
+claveecocadiz<-ecocadiz.aldistSS3
+Lmed_GE1_ecocadiz<-as.numeric(claveecocadiz$Lbin_hi)*as.numeric(claveecocadiz$`0`)
+Lmed_GE2_ecocadiz<-as.numeric(claveecocadiz$Lbin_hi)*as.numeric(claveecocadiz$`1`)
+
+LMED_GE1_ecocadiz<-claveecocadiz %>% 
+                 mutate(ytr=as.yearqtr(year + step/4))%>%
+                 mutate(L1=Lmed_GE1_ecocadiz) %>% 
+                  group_by(ytr) %>% 
+                summarize(sum1 = sum(`1`),sum2 = sum(L1)) %>% 
+                mutate(Lmed=sum2/sum1)
+
+LMED_GE2_ecocadiz<-claveecocadiz %>% 
+                 mutate(ytr=as.yearqtr(year + step/4))%>%
+                 mutate(L2=Lmed_GE2_ecocadiz) %>% 
+                  group_by(ytr) %>% 
+                summarize(sum1 = sum(`2`),sum2 = sum(L2)) %>% 
+                mutate(Lmed=sum2/sum1)
+
+ggplot(LMED_GE1_ecocadiz,aes(x=ytr,y=Lmed))+ 
+  geom_point()+
+   geom_smooth()+
+  #geom_line()+ 
+  lims(y=c(5,15))+
+    labs(x = 'Años', y = 'Tallas medias (cm)') +
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color=NA)) + 
+     ggtitle('Talla media del Grupo de edad 1 - Campaña Pelago')+
+    theme(plot.title = element_text(size = 10))+ 
+    theme_bw(base_size=8) +
+scale_x_yearqtr(format = "%Y-T%q")
+
+ggplot(LMED_GE2_ecocadiz,aes(x=ytr,y=Lmed))+ 
+  geom_point()+
+   geom_smooth()+
+  #geom_line()+ 
+  lims(y=c(5,15))+
+    labs(x = 'Años', y = 'Tallas medias (cm)') +
+    theme(panel.background = element_rect(fill ="gray99")) + 
+    theme(panel.grid=element_line(color=NA)) + 
+     ggtitle('Talla media del Grupo de edad 2 - Campaña Pelago')+
+    theme(plot.title = element_text(size = 10))+ 
+    theme_bw(base_size=8) +
+scale_x_yearqtr(format = "%Y-T%q")
+
 ```
 
 
 ```{r fig.height=8,fig.width=8,echo=FALSE}
+AGE<-unique(ecocadiz.aldist_xxx$age)
+
 ggplot(ecocadiz.aldist_xxx, aes(x=length, y=number,group=age,colour=as.character(age))) + 
     geom_line()+
     facet_grid(year~step,  as.table = TRUE,scales = "free") +
     labs(x = 'Tallas', y = 'Abundancia en número') +
     scale_colour_discrete(name  ="Grupos de Edad",
-                            labels=seq(0,4))+
+                            labels=AGE)+
+    scale_colour_manual(values=c('green','blue','magenta')) +
     theme(panel.background = element_rect(fill ="gray99")) +
     theme(panel.grid=element_line(color=NA)) +
      ggtitle('ECOCADIZ')+
@@ -415,12 +514,14 @@ fleet.ldist.alkseineSS3[is.na(fleet.ldist.alkseineSS3)] <- 0
 
 
 ```{r fig.height=12,fig.width=8,echo=FALSE}
+AGE<-unique(fleet.ldist.alkseine_xxx$age)
 ggplot(fleet.ldist.alkseine_xxx, aes(x=length, y=number,group=age,colour=as.character(age))) + 
     geom_line()+
     facet_grid(year~step,  as.table = TRUE,scales = "free") +
     labs(x = 'Tallas', y = 'Abundancia en número') +
     scale_colour_discrete(name  ="Grupos de Edad",
-                            labels=seq(0,4))+
+                            labels=AGE)+
+    scale_colour_manual(values=c('red','green','blue','magenta')) +
     theme(panel.background = element_rect(fill ="gray99")) +
     theme(panel.grid=element_line(color=NA)) +
      ggtitle('FLOTA')+
