@@ -500,8 +500,7 @@ MG_parms7<-data.frame("LO"           = -3.0,
                       "Block_Fxn"    = 0)
 ctl1$MG_parms["Wtlen_1_Fem_GP_1",]<-MG_parms7
 ##--------------------------------------------------------------
-MG_parms8<-data.frame(row.names="Wtlen_2_Fem_GP_1",
-                      "LO"           = -3.0,
+MG_parms8<-data.frame("LO"           = -3.0,
                       "HI"           =  3.0,
                       "INIT"         = 3.278,
                       "PRIOR"        = 3.278,
@@ -515,7 +514,7 @@ MG_parms8<-data.frame(row.names="Wtlen_2_Fem_GP_1",
                       "dev_PH"       = 0,
                       "Block"        = 0,
                       "Block_Fxn"    = 0)
-ctl1$MG_parms[8,]<-MG_parms8
+ctl1$MG_parms["Wtlen_2_Fem_GP_1",]<-MG_parms8
 ##--------------------------------------------------------------
 MG_parms10<-data.frame("LO"           = -3.0,
                       "HI"           =  3.0,

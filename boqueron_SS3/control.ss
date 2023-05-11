@@ -31,7 +31,7 @@
 #
 # setup for M, growth, maturity, fecundity, recruitment distibution, movement
 #
-3 #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate
+3 #_natM_type:_0=1Parm; 1=N_breakpoints;_2=Lorenzen;_3=agespecific;_4=agespec_withseasinterpolate;_5=Maunder_M;_6=Age-range_Lorenzen
 #_ #_Age_natmort_by sex x growthpattern
 #_Age_0	Age_1	Age_2	Age_3
 2.21	1.3	1.3	1.3	#_natM1
@@ -61,11 +61,13 @@
 -3   	3       	3.278     	3.278     	99 	0	-50	0	0	0	0	0	0	0	#_Wtlen_2_Fem_GP_1            
 50   	60      	55        	55        	0.8	0	-3 	0	0	0	0	0	0	0	#_Mat50%_Fem_GP_1             
 -3   	3       	-0.45     	-0.45     	99 	0	-50	0	0	0	0	0	0	0	#_Mat_slope_Fem_GP_1          
--3   	3       	1         	1         	99 	0	-50	0	0	0	0	0	0	0	#_Eggs/kg_inter_Fem_GP_1      
--3   	3       	1         	1         	99 	0	-50	0	0	0	0	0	0	0	#_Eggs/kg_slope_wt_Fem_GP_1   
+-3   	3       	1         	1         	0.8	0	-3 	0	0	0	0	0	0	0	#_Eggs_alpha_Fem_GP_1         
+-3   	3       	0         	0         	0.8	0	-3 	0	0	0	0	0	0	0	#_Eggs_beta_Fem_GP_1          
 0    	0       	0         	0         	0  	0	-4 	0	0	0	0	0	0	0	#_RecrDist_month_1            
 1    	1       	1         	1         	99 	0	-1 	0	0	0	0	0	0	0	#_CohortGrowDev               
 1e-06	0.999999	0.5       	0.5       	0.5	0	-99	0	0	0	0	0	0	0	#_FracFemale_GP_1             
+-3   	3       	1         	1         	99 	0	-50	0	0	0	0	0	0	0	#_Eggs/kg_inter_Fem_GP_1      
+-3   	3       	1         	1         	99 	0	-50	0	0	0	0	0	0	0	#_Eggs/kg_slope_wt_Fem_GP_1   
 0    	10      	1         	1         	99 	0	-3 	0	0	0	0	0	0	0	#_RecrDist_GP_1_area_1_month_1
 #_timevary MG parameters
 # info on dev vectors created for MGparms are reported with other devs after tag parameter section
